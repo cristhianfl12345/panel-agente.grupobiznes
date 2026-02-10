@@ -1,0 +1,54 @@
+export default function ReniecDetalle({ detalle }) {
+  if (!detalle?.persona) return null
+
+  const { persona, rccOK, rccDetalle } = detalle
+
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow p-6 space-y-4">
+      <h3 className="text-lg font-semibold text-[#2C4361] dark:text-white">
+        Detalle de Persona
+      </h3>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+        <p className="text-white"><b>DNI:</b> {persona.Doc}</p>}
+        <p><b>Fecha Nac:</b> {persona.FechaNacimiento}</p>
+        <p className="text-white"><b>Edad:</b> {persona.Edad}</p>
+        <p className="md:col-span-2 text-white">
+          <b>Nombre:</b> {persona.ApellidoPaterno} {persona.ApellidoMaterno}, {persona.Nombres}
+        </p>
+      </div>
+
+      <div className="pt-2">
+        <span className={`text-sm font-medium ${
+          rccOK ? 'text-red-600' : 'text-green-600'
+        }`}>
+          {rccOK ? 'Con registros RCC' : 'Sin registros RCC'}
+        </span>
+      </div>
+
+      {rccDetalle.length > 0 && (
+        <div className="overflow-auto">
+          <table className="w-full text-xs border mt-2">
+            <thead className="bg-gray-100 dark:bg-slate-700">
+              <tr>
+                <th className="p-2">Entidad</th>
+                <th className="p-2">Clasificación</th>
+                <th className="p-2">Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rccDetalle.map((r, i) => (
+                <tr key={i} className="border-t">
+                  <td className="p-2">{r.ENTIDAD}</td>
+                  <td className="p-2">{r.CLASIFICACION}</td>
+                  <td className="p-2">{r.DESCRIPCION}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  )
+}
+  cambiar el yellow a un blue 400
