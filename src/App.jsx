@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom' 
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './routes/Login'
 import AddUser from './routes/AddUser'
 import Home from './routes/Home'
 import ProtectedRoute from '../components/ProtectedRoute'
+import PublicRoute from '../components/PublicRoute'
 import PlatformRoute from './components/PlatformRoute'
 import Reniec from './pages/Reniec'
 import Monitor from './routes/Monitor'
@@ -11,11 +12,23 @@ import { KeepAliveProvider } from './context/KeepAliveContext'
 import Header from './routes/header.jsx'
 
 function App() {
+  const isAuth = localStorage.getItem('auth')
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<Login />} />
 
+        {/* LOGIN (bloqueado si ya hay sesión) */}
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+
+        {/* HOME */}
         <Route
           path="/home"
           element={
@@ -27,6 +40,7 @@ function App() {
           }
         />
 
+        {/* BUSQUEDA */}
         <Route
           path="/reniec"
           element={
@@ -40,6 +54,7 @@ function App() {
           }
         />
 
+        {/* MONITOR */}
         <Route
           path="/monitor"
           element={
@@ -53,6 +68,7 @@ function App() {
           }
         />
 
+        {/* CARTERIZACION */}
         <Route
           path="/cartera"
           element={
@@ -66,8 +82,17 @@ function App() {
           }
         />
 
-        {/* redirect por defecto */}
-        <Route path="*" element={<Login />} />
+        {/* REDIRECCIÓN INTELIGENTE POR DEFECTO */}
+        <Route
+          path="*"
+          element={
+            <Navigate
+              to={isAuth ? "/home" : "/login"}
+              replace
+            />
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   )
