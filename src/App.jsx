@@ -27,6 +27,15 @@ function App() {
             </PublicRoute>
           }
         />
+                {/* adduser 
+        <Route
+          path="/add-user"
+          element={
+            <PublicRoute>
+              <AddUser />
+            </PublicRoute>
+          }
+        /> */}
 
         {/* HOME */}
         <Route

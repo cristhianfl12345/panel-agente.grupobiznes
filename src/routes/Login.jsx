@@ -12,14 +12,14 @@ function Login() {
 
   const navigate = useNavigate()
 
-  // 🔥 leer tema al cargar
+  //  leer tema al cargar
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme')
     if (storedTheme === 'light') setDarkMode(false)
     else setDarkMode(true)
   }, [])
 
-  // 🔥 toggle + persistencia
+  //  toggle + persistencia
   const toggleTheme = () => {
     const nextDark = !darkMode
     setDarkMode(nextDark)
@@ -32,7 +32,7 @@ function Login() {
     setLoading(true)
 
     try {
-      const res = await fetch('http://localhost:3001/api/auth/login', {
+      const res = await fetch('http://192.168.9.115:3001/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -43,13 +43,13 @@ function Login() {
 
       const data = await res.json()
 
-      // ❌ si falla → NO guardes nada
+      //  si falla → NO guardes nada
       if (!res.ok) {
         setError(data.message || 'Error al iniciar sesión')
         return
       }
 
-      // ✅ SOLO SI ES OK
+      //  SOLO SI ES OK
       localStorage.setItem('auth', 'true')
       localStorage.setItem('nombre', data.nombre)
       localStorage.setItem('id_usuario', data.id_usuario)

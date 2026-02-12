@@ -6,7 +6,7 @@ export async function buscarReniec(params) {
   ).toString()
 
   const res = await fetch(
-    `http://localhost:3001/api/reniec/buscar?${query}`
+    `http://192.168.9.115:3001/api/reniec/buscar?${query}`
   )
 
   if (!res.ok) {
@@ -19,7 +19,7 @@ export async function buscarReniec(params) {
 
 export async function obtenerDetalleReniec(dni) {
   const res = await fetch(
-    `http://localhost:3001/api/reniec/detalle/${dni}`
+    `http://192.168.9.115:3001/api/reniec/detalle/${dni}`
   )
 
   if (!res.ok) {

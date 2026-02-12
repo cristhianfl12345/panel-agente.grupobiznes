@@ -44,7 +44,7 @@ export function KeepAliveProvider({ children }) {
 
     try {
       const res = await fetch(
-        'http://localhost:3001/api/auth/keepalive',
+        'http://192.168.9.115:3001/api/auth/keepalive',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
