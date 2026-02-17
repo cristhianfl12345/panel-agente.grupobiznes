@@ -67,14 +67,14 @@ export default function ReniecDetalle({ detalle }) {
         
           <button
             onClick={handleDownload}
-            className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium shadow transition ${
+            className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium shadow transition cursor-pointer  ${
               isDark
                 ? 'bg-yellow-400 text-black hover:bg-yellow-300'
                 : 'bg-violet-600 text-white hover:bg-violet-500'
             }`}
           >
             <FiDownload />
-            Descargar PNG
+            Descargar Información
           </button>
         </div>
 
@@ -190,12 +190,12 @@ export default function ReniecDetalle({ detalle }) {
               {rccDetalle.map((r, i) => (
                 <div
                   key={i}
-                  className={`grid grid-cols-[50%_20%_30%] gap-3 border rounded-xl p-3 text-sm ${
+                  className={`grid grid-cols-[52%_15%_30%] gap-3 border rounded-xl p-3 text-sm ${
                     isDark ? 'bg-slate-800 border-slate-700' : 'bg-white'
                   }`}
                 >
                   <p className="font-medium break-words">{r.ENTIDAD}</p>
-                  <span className="inline-block w-fit px-2 py-0.5 rounded-full text-xs bg-green-100 text-green-700">
+                  <span className="inline-block w-fit px-2 py-2 rounded-full text-xs bg-green-100 text-green-700">
                     {r.CLASIFICACION}
                   </span>
                   <p className="text-slate-500 break-words">{r.DESCRIPCION}</p>
