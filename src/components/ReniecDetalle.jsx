@@ -67,7 +67,7 @@ export default function ReniecDetalle({ detalle }) {
         
           <button
             onClick={handleDownload}
-            className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium shadow transition cursor-pointer  ${
+            className={`flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-medium shadow transition cursor-pointer ${
               isDark
                 ? 'bg-yellow-400 text-black hover:bg-yellow-300'
                 : 'bg-violet-600 text-white hover:bg-violet-500'

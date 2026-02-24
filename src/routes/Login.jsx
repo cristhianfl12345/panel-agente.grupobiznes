@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { FiSun, FiMoon } from 'react-icons/fi'
 import { useNavigate, Link } from 'react-router-dom'
 import logoPanel from '/src/assets/logo_panel.png'
+import { useAuth } from '../context/AuthContext'
 
 function Login() {
   const [user, setUser] = useState('')
@@ -11,15 +12,16 @@ function Login() {
   const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
+  const { login } = useAuth()
 
-  //  leer tema al cargar
+  // Leer tema al cargar
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme')
     if (storedTheme === 'light') setDarkMode(false)
     else setDarkMode(true)
   }, [])
 
-  //  toggle + persistencia
+  // Toggle + persistencia
   const toggleTheme = () => {
     const nextDark = !darkMode
     setDarkMode(nextDark)
@@ -43,19 +45,28 @@ function Login() {
 
       const data = await res.json()
 
-      //  si falla → NO guardes nada
       if (!res.ok) {
         setError(data.message || 'Error al iniciar sesión')
         return
       }
 
-      //  SOLO SI ES OK
+      // 🔐 Guardar en AuthContext (principal)
+      login({
+        id_usuario: data.id_usuario,
+        usuario: data.usuario,
+        nombre: data.nombre,
+        id_plataforma: data.id_plataforma,
+        plataforma: data.plataforma_codigo,
+      })
+
+      // 🔁 Mantener compatibilidad con tu Home actual
       localStorage.setItem('auth', 'true')
       localStorage.setItem('nombre', data.nombre)
-      localStorage.setItem('id_usuario', data.id_usuario)
-      localStorage.setItem('plataforma', data.plataforma)
+      localStorage.setItem('plataforma', data.plataforma_codigo)
+      localStorage.setItem('id_plataforma', data.id_plataforma)
 
       navigate('/home')
+
     } catch (err) {
       setError('No se pudo conectar con el servidor')
     } finally {

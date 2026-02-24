@@ -1,34 +1,42 @@
-import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import Leads from '../pages/Leads'
+import { useAuth } from '../context/AuthContext'
+import { useLocalTheme } from '../context/useLocalTheme'
 
-function Monitor() {
-  const navigate = useNavigate()
+export default function Monitor() {
 
-  useEffect(() => {
-    const isAuth = localStorage.getItem('auth')
-    if (!isAuth) {
-      navigate('/login')
-    }
-  }, [navigate])
+  const { user } = useAuth()
+  const { theme } = useLocalTheme()
 
-  return (
-    <div className="min-h-screen p-6 bg-slate-100 text-slate-800">
-      <h1 className="text-2xl font-bold mb-4">
-        Monitor de Leads
-      </h1>
+  const isDark = theme === 'dark'
+  const id_plataforma = parseInt(localStorage.getItem('id_plataforma'))
 
-      <p className="text-slate-600 mb-6">
-        Vista de monitoreo general de leads.
-      </p>
-
-      <div className="p-6 rounded-xl bg-white shadow">
-        <p className="text-slate-500">
-          Aquí se mostrará el listado de leads, filtros por fecha,
-          estados y métricas generales.
-        </p>
+  if (!user) {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center transition-colors ${
+          isDark
+            ? 'bg-[#1F2029] text-white'
+            : 'bg-slate-50 text-slate-800'
+        }`}
+      >
+        <p>Cargando sesión...</p>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
-export default Monitor
+  if (![2, 3, 4].includes(id_plataforma)) {
+    return (
+      <div
+        className={`min-h-screen flex items-center justify-center transition-colors ${
+          isDark
+            ? 'bg-[#1F2029] text-white'
+            : 'bg-slate-50 text-slate-800'
+        }`}
+      >
+        <p>No autorizado</p>
+      </div>
+    )
+  }
+
+  return <Leads user={user} />
+}

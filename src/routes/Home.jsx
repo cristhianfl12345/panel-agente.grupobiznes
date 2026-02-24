@@ -33,6 +33,8 @@ function Home() {
     localStorage.removeItem('auth')
     localStorage.removeItem('nombre')
     localStorage.removeItem('plataforma')
+    localStorage.removeItem('id_plataforma')
+localStorage.removeItem('plataforma_codigo')
     navigate('/login')
   }
 
@@ -144,10 +146,8 @@ function Home() {
                   ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-200 hover:bg-slate-300'}
                 `}
               >
-                <h3 className="font-semibold">Monitor Leads</h3>
-                <p className={isDark ? 'text-slate-400' : 'text-slate-500'}>
-                  Filtrado por fechas...
-                </p>
+                <h3 className="flex justify-center font-semibold">Monitor Leads</h3>
+                
               </div>
             )}
 
