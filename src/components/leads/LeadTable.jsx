@@ -16,20 +16,34 @@ export default function LeadTable({ leads = [], loading, searched }) {
         `}
       >
 
-        <thead
-          className={`
-            ${isDark
-              ? 'bg-slate-800'
-              : 'bg-gray-100'}
-          `}
-        >
-          <tr>
-            <th className="p-2 border">IdKey</th>
-            <th className="p-2 border">Telefono</th>
-            <th className="p-2 border">Ult Nivel</th>
-            <th className="p-2 border">Mejor Nivel</th>
-          </tr>
-        </thead>
+<thead className={isDark ? 'bg-slate-800' : 'bg-gray-100'}>
+  <tr>
+    <th className="p-2 border">Alias</th>
+    <th className="p-2 border">CampaOrigen</th>
+    <th className="p-2 border">Gestion</th>
+    <th className="p-2 border">IdKey_Computado</th>
+    <th className="p-2 border">Campaña</th>
+    <th className="p-2 border">DNI</th>
+    <th className="p-2 border">Email</th>
+    <th className="p-2 border">Email2</th>
+    <th className="p-2 border">Fecha Creación</th>
+    <th className="p-2 border">Fines Adicionales</th>
+    <th className="p-2 border">Form ID</th>
+    <th className="p-2 border">Hora Creación</th>
+    <th className="p-2 border">Hora C</th>
+    <th className="p-2 border">IdKey</th>
+    <th className="p-2 border">Modelo</th>
+    <th className="p-2 border">Name Form</th>
+    <th className="p-2 border">Nombre Completo</th>
+    <th className="p-2 border">Teléfono</th>
+    <th className="p-2 border">Origen Negocio</th>
+    <th className="p-2 border">Pauta</th>
+    <th className="p-2 border">Perfil</th>
+    <th className="p-2 border">Permite Llamada</th>
+    <th className="p-2 border">Plataforma</th>
+    <th className="p-2 border">Política</th>
+  </tr>
+</thead>
 
         <tbody>
 

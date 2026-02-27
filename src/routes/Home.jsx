@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'  
-import { FiLogOut, FiUser, FiSearch, FiSun, FiMoon, FiBriefcase } from 'react-icons/fi'
+import { useEffect, useState } from 'react'   
+import { FiLogOut, FiUser, FiSearch, FiSun, FiMoon, FiBriefcase, FiChevronDown, FiChevronUp } from 'react-icons/fi'
 import { WiStars } from 'react-icons/wi'
 import { useKeepAlive } from '../context/KeepAliveContext'
 import { useNavigate } from 'react-router-dom'
@@ -10,6 +10,9 @@ function Home() {
   const { secondsLeft } = useKeepAlive()
   const { theme, toggleTheme } = useLocalTheme()
   const [nombre, setNombre] = useState('')
+  const [campanasMonitor, setCampanasMonitor] = useState([])
+  const [openMonitor, setOpenMonitor] = useState(false)
+
   const navigate = useNavigate()
 
   const minutes = Math.floor(secondsLeft / 60)
@@ -20,6 +23,7 @@ function Home() {
   useEffect(() => {
     const isAuth = localStorage.getItem('auth')
     const storedNombre = localStorage.getItem('nombre')
+    const idUsuario = localStorage.getItem('id_usuario')
 
     if (!isAuth || !storedNombre) {
       navigate('/login')
@@ -27,6 +31,19 @@ function Home() {
     }
 
     setNombre(storedNombre)
+
+    // 🔹 Obtener campañas monitor del backend
+    if (idUsuario) {
+      fetch(`http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`)
+        .then(res => res.json())
+        .then(data => {
+  setCampanasMonitor(data.data || data)
+})
+        .catch(err => {
+          console.error('Error cargando campañas monitor:', err)
+        })
+    }
+
   }, [navigate])
 
   const handleLogout = () => {
@@ -34,8 +51,16 @@ function Home() {
     localStorage.removeItem('nombre')
     localStorage.removeItem('plataforma')
     localStorage.removeItem('id_plataforma')
-localStorage.removeItem('plataforma_codigo')
+    localStorage.removeItem('plataforma_codigo')
+    localStorage.removeItem('id_campana')
+    localStorage.removeItem('nombre_campana')
     navigate('/login')
+  }
+
+  const handleSelectCampana = (campana) => {
+    localStorage.setItem('id_campana', campana.id_campana)
+    localStorage.setItem('nombre_campana', campana.nombre)
+    navigate('/monitor')
   }
 
   return (
@@ -115,57 +140,110 @@ localStorage.removeItem('plataforma_codigo')
             Has iniciado sesión correctamente
           </p>
 
-          {/* BOTÓN RENIEC */}
-          {canAccess('busqueda') && (
-            <div className="flex justify-center mt-6 ">
-              <button
-                onClick={() => navigate('/reniec')}
+{/* BOTONES PRINCIPALES EN 3 COLUMNAS */}
+<div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10">
+
+  {/* BOTÓN RENIEC */}
+  {canAccess('busqueda') && (
+    <button
+      onClick={() => navigate('/reniec')}
+      className={`
+        w-full flex items-center justify-center gap-2
+        px-6 py-4 rounded-xl shadow
+        transition transform hover:scale-105
+        ${isDark
+          ? 'bg-yellow-500 hover:bg-yellow-600 text-black'
+          : 'bg-gradient-to-r from-violet-600 to-purple-500 text-white'
+        }
+      `}
+    >
+      <FiSearch size={20} />
+      Buscador de personas
+    </button>
+  )}
+
+  {/* MONITOR LEADS */}
+  {canAccess('monitor') && (
+    <div className="w-full relative">
+
+      <button
+        onClick={() => setOpenMonitor(!openMonitor)}
+        className={`
+          w-full flex items-center justify-between
+          px-6 py-4 rounded-xl shadow
+          transition transform hover:scale-105
+          ${isDark
+            ? 'bg-[#74F2F2] text-black hover:brightness-95'
+            : 'bg-[#354196] text-white hover:brightness-110'
+          }
+        `}
+      >
+        <span className="flex items-center gap-2 font-semibold">
+          <FiBriefcase size={20} />
+          Monitor Leads
+        </span>
+
+        {openMonitor ? <FiChevronUp /> : <FiChevronDown />}
+      </button>
+
+      {openMonitor && (
+        <div
+          className={`
+            absolute left-0 w-full mt-2
+            rounded-xl shadow-lg z-50
+            max-h-60 overflow-y-auto
+            ${isDark ? 'bg-slate-800' : 'bg-white'}
+          `}
+        >
+          <div className="p-3 space-y-2">
+            {campanasMonitor.length === 0 && (
+              <p className="text-sm text-gray-400 text-center">
+                No hay campañas asignadas
+              </p>
+            )}
+
+            {campanasMonitor.map((campana) => (
+              <div
+                key={campana.id_campana}
+                onClick={() => handleSelectCampana(campana)}
                 className={`
-                  flex items-center gap-2
+                  cursor-pointer px-4 py-2 rounded-lg text-sm text-center
                   ${isDark
-                    ? 'bg-yellow-500 hover:bg-yellow-600'
-                    : 'bg-gradient-to-r from-violet-600 to-purple-500 hover:bg-[#223550]'
+                    ? 'bg-slate-700 hover:bg-slate-600'
+                    : 'bg-slate-100 hover:bg-slate-200'
                   }
-                  ${isDark ? 'text-black' : 'text-white'} px-6 py-3 rounded-xl
-                  shadow transition transform hover:scale-105 cursor-pointer 
+                  transition
                 `}
               >
-                <FiSearch size={20} />
-                Buscador de personas
-              </button>
-            </div>
-          )}
-
-          {/* CARDS */}
-          <div className="flex justify-center grid-cols-1 sm:grid-cols-3 gap-4 mt-10">
-            {canAccess('monitor') && (
-              <div
-                onClick={() => navigate('/monitor')}
-                className={`
-                  text-center p-6 rounded-xl cursor-pointer
-                  ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-200 hover:bg-slate-300'}
-                `}
-              >
-                <h3 className="flex justify-center font-semibold">Monitor Leads</h3>
-                
+                {campana.nombre}
               </div>
-            )}
-
-            {canAccess('cartera') && (
-              <div
-                onClick={() => navigate('/cartera')}
-                className={`
-                  text-center p-6 rounded-xl cursor-pointer
-                  ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-slate-200 hover:bg-slate-300'}
-                `}
-              >
-                <h3 className="font-semibold">Carterización</h3>
-                <p className={isDark ? 'text-slate-400' : 'text-slate-500'}>
-                  Gestión de carteras y campañas
-                </p>
-              </div>
-            )}
+            ))}
           </div>
+        </div>
+      )}
+    </div>
+  )}
+
+  {/* CARTERIZACIÓN */}
+  {canAccess('cartera') && (
+    <button
+      onClick={() => navigate('/cartera')}
+      className={`
+        w-full flex items-center justify-center gap-2
+        px-6 py-4 rounded-xl shadow
+        transition transform hover:scale-105
+        ${isDark
+          ? 'bg-[#DE546C] text-black hover:brightness-95'
+          : 'bg-[#732230] text-white hover:brightness-110'
+        }
+      `}
+    >
+      <FiUser size={20} />
+      Carterización
+    </button>
+  )}
+
+</div>
         </div>
       </main>
 

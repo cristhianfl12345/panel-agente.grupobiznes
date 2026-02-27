@@ -9,16 +9,10 @@ import Header from '../routes/header.jsx'
 export default function Leads() {
 
   const { user } = useAuth()
-
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
 
-  const [fecha, setFecha] = useState(
-    new Date().toISOString().slice(0, 10)
-  )
-
-  const [idCamp, setIdCamp] = useState('')
-  const [iniCampania, setIniCampania] = useState('')
+  // ❌ Quitamos fecha automática
   const [leads, setLeads] = useState([])
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
@@ -33,33 +27,34 @@ export default function Leads() {
     )
   }
 
-  const fetchLeads = async () => {
+  // 🔥 Ahora recibe IdCamp y FechaIngreso desde LeadFilters
+const fetchLeads = async ({ IdCamp, FechaIngreso, IniCampania }) => {
 
-    if (!fecha || !idCamp) {
-      alert('Debe seleccionar IdCamp y fecha')
-      return
-    }
-
-    setLoading(true)
-    setSearched(true)
-
-    try {
-
-      const data = await getLeads(
-        fecha,
-        idCamp,
-        iniCampania
-      )
-
-      setLeads(data.data || [])
-
-    } catch (err) {
-      console.error(err)
-      setLeads([])
-    } finally {
-      setLoading(false)
-    }
+  if (!FechaIngreso || !IdCamp) {
+    alert('Debe seleccionar fecha')
+    return
   }
+
+  setLoading(true)
+  setSearched(true)
+
+  try {
+
+    const data = await getLeads(
+      FechaIngreso,
+      IdCamp,
+      IniCampania
+    )
+
+    setLeads(data.data || [])
+
+  } catch (err) {
+    console.error(err)
+    setLeads([])
+  } finally {
+    setLoading(false)
+  }
+}
 
   const filteredLeads = useMemo(() => {
 
@@ -83,16 +78,9 @@ export default function Leads() {
 
       <div className="p-6 space-y-6 max-w-6xl mx-auto">
 
+        {/* 🔥 LeadFilters ahora controla fecha y usa id_campana del localStorage */}
         <LeadFilters
-          fecha={fecha}
-          setFecha={setFecha}
-          idCamp={idCamp}
-          setIdCamp={setIdCamp}
-          iniCampania={iniCampania}
-          setIniCampania={setIniCampania}
           onSearch={fetchLeads}
-          searchText={searchText}
-          setSearchText={setSearchText}
         />
 
         <LeadTable

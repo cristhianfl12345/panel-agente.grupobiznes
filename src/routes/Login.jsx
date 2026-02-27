@@ -60,6 +60,7 @@ function Login() {
       })
 
       // 🔁 Mantener compatibilidad con tu Home actual
+      localStorage.setItem('id_usuario', data.id_usuario)
       localStorage.setItem('auth', 'true')
       localStorage.setItem('nombre', data.nombre)
       localStorage.setItem('plataforma', data.plataforma_codigo)
