@@ -64,7 +64,7 @@ function LeadFilters({ onSearch }) {
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
-            className={`px-3 py-2 rounded-lg border ${
+            className={`px-3 py-2 rounded-lg border cursor-pointer ${
               isDark
                 ? 'bg-slate-700 text-white border-slate-600'
                 : 'bg-slate-100 text-slate-800 border-slate-300'
@@ -81,7 +81,7 @@ function LeadFilters({ onSearch }) {
           <select
             value={iniCampania}
             onChange={(e) => setIniCampania(e.target.value)}
-            className={`px-3 py-2 rounded-lg border ${
+            className={`px-3 py-2 rounded-lg border cursor-pointer ${
               isDark
                 ? 'bg-slate-700 text-white border-slate-600'
                 : 'bg-slate-100 text-slate-800 border-slate-300'
@@ -101,7 +101,7 @@ function LeadFilters({ onSearch }) {
         {/* BOTÓN */}
         <button
           type="submit"
-          className={`flex items-center gap-2 px-5 py-2 rounded-lg ${
+          className={`flex items-center gap-2 px-5 py-2 rounded-lg cursor-pointer ${
             isDark
               ? 'bg-blue-600 hover:bg-blue-700 text-white'
               : 'bg-[#2C4361] hover:bg-[#1f3147] text-white'

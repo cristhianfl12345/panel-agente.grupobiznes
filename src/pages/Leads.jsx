@@ -76,7 +76,7 @@ const fetchLeads = async ({ IdCamp, FechaIngreso, IniCampania }) => {
 
       <Header username={user?.usuario} />
 
-      <div className="p-6 space-y-6 max-w-6xl mx-auto">
+      <div className="px-6 py-4 space-y-4 w-full">
 
         {/* 🔥 LeadFilters ahora controla fecha y usa id_campana del localStorage */}
         <LeadFilters
