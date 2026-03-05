@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { FiSun, FiMoon } from 'react-icons/fi'
 import { useNavigate, Link } from 'react-router-dom'
+import { motion, AnimatePresence } from "motion/react"
 import logoPanel from '/src/assets/logo_panel.png'
 import { useAuth } from '../context/AuthContext'
 
@@ -14,14 +15,12 @@ function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
 
-  // Leer tema al cargar
   useEffect(() => {
     const storedTheme = localStorage.getItem('theme')
     if (storedTheme === 'light') setDarkMode(false)
     else setDarkMode(true)
   }, [])
 
-  // Toggle + persistencia
   const toggleTheme = () => {
     const nextDark = !darkMode
     setDarkMode(nextDark)
@@ -50,7 +49,6 @@ function Login() {
         return
       }
 
-      // 🔐 Guardar en AuthContext (principal)
       login({
         id_usuario: data.id_usuario,
         usuario: data.usuario,
@@ -59,7 +57,6 @@ function Login() {
         plataforma: data.plataforma_codigo,
       })
 
-      // 🔁 Mantener compatibilidad con tu Home actual
       localStorage.setItem('id_usuario', data.id_usuario)
       localStorage.setItem('auth', 'true')
       localStorage.setItem('nombre', data.nombre)
@@ -76,85 +73,153 @@ function Login() {
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.35 }}
       className={`min-h-screen flex items-center justify-center
         ${darkMode ? 'bg-slate-900' : 'bg-slate-100'}`}
     >
-      <div
-        className={`w-full max-w-sm p-8 rounded-2xl shadow-lg
-          ${darkMode ? 'bg-slate-950' : 'bg-white'}`}
+
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35 }}
+        className={`w-full max-w-sm p-8 rounded-2xl shadow-xl backdrop-blur
+          ${darkMode ? 'bg-slate-950/95' : 'bg-white'}`}
       >
-        {/* Dark / Light */}
+
+        {/* Toggle Theme */}
         <div className="flex justify-end mb-4">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1, rotate: 10 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 260 }}
             onClick={toggleTheme}
-            className={`p-2 rounded-lg transition
+            className={`p-2 rounded-lg transition shadow-sm
               ${darkMode
                 ? 'bg-slate-800 text-yellow-400'
                 : 'bg-slate-200 text-slate-700'
               }`}
             aria-label="Cambiar tema"
           >
-            {darkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
-          </button>
+            <motion.div
+              key={darkMode ? "sun" : "moon"}
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              transition={{ duration: 0.25 }}
+            >
+              {darkMode ? <FiSun size={18} /> : <FiMoon size={18} />}
+            </motion.div>
+          </motion.button>
         </div>
 
-        <img src={logoPanel} className="w-28 mx-auto mb-6" />
+        {/* Logo */}
+        <motion.img
+          src={logoPanel}
+          className="w-28 mx-auto mb-6"
+          initial={{ opacity: 0, scale: 0.8, y: -10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          whileHover={{ scale: 1.05 }}
+        />
 
-        <h2
+        {/* Title */}
+        <motion.h2
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           className={`text-2xl font-semibold text-center mb-6
             ${darkMode ? 'text-white' : 'text-slate-800'}`}
         >
           Iniciar sesión
-        </h2>
+        </motion.h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
+
+          {/* Usuario */}
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
+            transition={{ duration: 0.15 }}
             placeholder="Usuario"
             value={user}
             onChange={(e) => setUser(e.target.value)}
-            className={`w-full px-4 py-2 rounded
+            className={`w-full px-4 py-2 rounded-lg transition shadow-sm outline-none
               ${darkMode
-                ? 'bg-slate-800 text-white'
-                : 'bg-slate-100 text-slate-800 border'
+                ? 'bg-slate-800 text-white focus:ring-2 focus:ring-blue-500'
+                : 'bg-slate-100 text-slate-800 border focus:ring-2 focus:ring-blue-500'
               }`}
             required
           />
 
-          <input
+          {/* Password */}
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
+            transition={{ duration: 0.15 }}
             type="password"
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={`w-full px-4 py-2 rounded
+            className={`w-full px-4 py-2 rounded-lg transition shadow-sm outline-none
               ${darkMode
-                ? 'bg-slate-800 text-white'
-                : 'bg-slate-100 text-slate-800 border'
+                ? 'bg-slate-800 text-white focus:ring-2 focus:ring-blue-500'
+                : 'bg-slate-100 text-slate-800 border focus:ring-2 focus:ring-blue-500'
               }`}
             required
           />
 
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {/* Error */}
+          <AnimatePresence>
+            {error && (
+              <motion.p
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                transition={{ duration: 0.2 }}
+                className="text-red-500 text-sm text-center"
+              >
+                {error}
+              </motion.p>
+            )}
+          </AnimatePresence>
 
-          <button
+          {/* Submit */}
+          <motion.button
             type="submit"
             disabled={loading}
-            className="w-full py-2 rounded bg-blue-600 hover:bg-blue-700 text-white transition cursor-pointer "
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 280 }}
+            className="w-full py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition shadow-md cursor-pointer"
           >
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
+            <motion.span
+              key={loading ? "loading" : "text"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+            >
+              {loading ? 'Entrando...' : 'Entrar'}
+            </motion.span>
+          </motion.button>
+
         </form>
 
-        <Link
-          to="/add-user"
-          className="block text-center text-sm text-blue-400 mt-4"
+        {/* Link 
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
         >
-          Crear / resetear usuario
-        </Link>
-      </div>
-    </div>
+          <Link
+            to="/add-user"
+            className="block text-center text-sm text-blue-400 mt-4 hover:underline transition"
+          >
+            Crear / resetear usuario
+          </Link>
+        </motion.div>
+*/}
+      </motion.div>
+    </motion.div>
   )
 }
 

@@ -1,14 +1,51 @@
+"use client"
+
 import { useState, useMemo } from 'react'
 import LeadRow from './LeadRow'
 import { useLocalTheme } from '../../context/useLocalTheme'
+import { motion, AnimatePresence } from "motion/react"
+import { ArrowRightLeft } from "lucide-react"
 
-export default function LeadTable({ leads = [], loading, searched }) {
+export default function LeadTable({ 
+  leads = [], 
+  loading, 
+  searched, 
+  onCopy,
+  columns,
+  setColumns
+}) {
+
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
 
-  const rowsPerPage = 10
-  const [currentPage, setCurrentPage] = useState(1)
+  const [draggedKey, setDraggedKey] = useState(null)
 
+  const visibleColumns = columns?.filter(col => col.visible) || []
+
+  const handleDragStart = (key) => {
+    setDraggedKey(key)
+  }
+
+  const handleDrop = (targetKey) => {
+    if (!draggedKey) return
+
+    const newColumns = [...columns]
+
+    const fromIndex = newColumns.findIndex(c => c.key === draggedKey)
+    const toIndex = newColumns.findIndex(c => c.key === targetKey)
+
+    if (fromIndex === -1 || toIndex === -1) return
+
+    const [moved] = newColumns.splice(fromIndex, 1)
+    newColumns.splice(toIndex, 0, moved)
+
+    setColumns(newColumns)
+    setDraggedKey(null)
+  }
+
+  // PAGINACIÓN
+  const rowsPerPage = 13
+  const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(leads.length / rowsPerPage)
 
   const paginatedLeads = useMemo(() => {
@@ -24,132 +61,193 @@ export default function LeadTable({ leads = [], loading, searched }) {
   }
 
   return (
+
     <div className="w-full h-[calc(100vh-220px)] flex flex-col">
 
-      {/* TABLA */}
-      <div className="flex-1 overflow-auto">
-        <table
+      {/* CONTENEDOR TABLA */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.35 }}
+        className={`
+          flex-1 overflow-auto
+          rounded-xl
+          shadow-md
+          transition-colors
+          ${isDark ? "bg-slate-900" : "bg-white"}
+        `}
+      >
+
+        <table className={`
+          w-full
+          table-auto
+          text-xs
+          border-collapse
+          ${isDark 
+            ? 'text-slate-200' 
+            : 'text-slate-800'
+          }
+        `}>
+
+          {/* HEADER */}
+          <thead className={`
+            sticky top-0 z-20
+            backdrop-blur
+            ${isDark ? 'bg-slate-800/95' : 'bg-gray-100/95'}
+          `}>
+
+            <tr>
+
+              <AnimatePresence initial={false}>
+
+                {visibleColumns.map((col, i) => (
+
+                  <th
+                    key={col.key}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => handleDrop(col.key)}
+                    className={`
+                      border
+                      px-3 py-2
+                      text-left
+                      whitespace-nowrap
+                      transition-colors
+                      ${isDark ? 'border-slate-700' : 'border-slate-300'}
+                      ${i === 0 ? "rounded-tl-xl" : ""}
+                      ${i === visibleColumns.length - 1 ? "rounded-tr-xl" : ""}
+                    `}
+                  >
+
+                    <motion.div
+                      draggable
+                      onDragStart={() => handleDragStart(col.key)}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex items-center gap-2 cursor-move select-none group"
+                    >
+
+                      <motion.div
+                        whileHover={{ rotate: 90, scale: 1.2 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="text-slate-400 group-hover:text-blue-500"
+                      >
+                        <ArrowRightLeft size={14}/>
+                      </motion.div>
+
+                      <span className="font-medium whitespace-nowrap">
+                        {col.label}
+                      </span>
+
+                    </motion.div>
+
+                  </th>
+
+                ))}
+
+              </AnimatePresence>
+
+            </tr>
+
+          </thead>
+
+          {/* BODY */}
+          <tbody>
+
+            <AnimatePresence>
+
+              {!loading && paginatedLeads.map((lead, index) => (
+
+                <LeadRow
+                  key={lead.idkey}
+                  lead={lead}
+                  index={
+                    leads.length -
+                    ((currentPage - 1) * rowsPerPage + index)
+                  }
+                  onCopy={onCopy}
+                  columns={visibleColumns}
+                  isDark={isDark}
+                />
+
+              ))}
+
+            </AnimatePresence>
+
+          </tbody>
+
+        </table>
+
+      </motion.div>
+
+
+      {/* PAGINADOR */}
+      {!loading && leads.length > 0 && (
+
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
           className={`
-            min-w-full border text-xs transition-colors
-            ${isDark
-              ? 'border-slate-700 text-slate-200'
-              : 'border-slate-300 text-slate-800'}
+            flex
+            justify-center
+            items-center
+            gap-2
+            p-4
+            border-t
+            flex-wrap
+            ${isDark ? 'border-slate-700' : 'border-slate-300'}
           `}
         >
 
-  <thead className={`${isDark ? 'bg-slate-800' : 'bg-gray-100'} sticky top-0 z-10`}>
-  <tr>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1 rounded-lg border disabled:opacity-40"
+          >
+            «
+          </motion.button>
 
-    <th className="p-2 border text-center">#</th>
-    <th className="p-2 border">IdKey</th>
-    <th className="p-2 border">Perfil</th>
-    <th className="p-2 border">Customer Origin</th>
-    <th className="p-2 border text-center">U. Reg</th>
-    <th className="p-2 border">Fono</th>
-    <th className="p-2 border">Plt</th>
-    <th className="p-2 border">A.</th>
-    <th className="p-2 border">Name Anuncio</th>
-    <th className="p-2 border">Reg</th>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
 
-    <th className="p-2 border text-center">D.</th>
-    <th className="p-2 border text-center">G.</th>
+            <motion.button
+              key={page}
+              whileHover={{ scale: 1.12 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => goToPage(page)}
+              className={`
+                px-3 py-1
+                rounded-lg
+                border
+                transition
+                ${
+                  currentPage === page
+                    ? 'bg-blue-600 text-white border-blue-600'
+                    : isDark
+                      ? 'hover:bg-slate-700'
+                      : 'hover:bg-slate-200'
+                }
+              `}
+            >
+              {page}
+            </motion.button>
 
-    <th className="p-2 border text-center">Ult Nivel</th>
-    <th className="p-2 border text-center">🔊</th>
+          ))}
 
-    <th className="p-2 border text-center">Mejor Nivel</th>
-    <th className="p-2 border text-center">🔊</th>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 rounded-lg border disabled:opacity-40"
+          >
+            »
+          </motion.button>
 
-    <th className="p-2 border text-center">Atención</th>
-    <th className="p-2 border text-center">W.</th>
-    <th className="p-2 border text-center">W Mejor Nivel</th>
-    <th className="p-2 border text-center">Obs</th>
+        </motion.div>
 
-  </tr>
-</thead>
-
-          <tbody>
-
-            {loading && (
-              <tr>
-                <td colSpan="24" className="text-center p-4">
-                  Cargando...
-                </td>
-              </tr>
-            )}
-
-            {!loading && !searched && (
-              <tr>
-                <td colSpan="24" className={`text-center p-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                  Elige una fecha
-                </td>
-              </tr>
-            )}
-
-            {!loading && searched && leads.length === 0 && (
-              <tr>
-                <td colSpan="24" className={`text-center p-4 ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>
-                  No hay registros
-                </td>
-              </tr>
-            )}
-
-            {!loading && paginatedLeads.length > 0 &&
-              paginatedLeads.map((lead, index) => (
-  <LeadRow
-    key={lead.idkey}
-    lead={lead}
-    index={
-  leads.length -
-  ((currentPage - 1) * rowsPerPage + index)
-}
-  />
-))
-            }
-
-          </tbody>
-        </table>
-      </div>
-
-{/* PAGINACIÓN */}
-{!loading && leads.length > 0 && (
-  <div className="flex justify-center items-center gap-2 p-4 border-t flex-wrap">
-
-    {/* Botón anterior */}
-    <button
-      onClick={() => goToPage(currentPage - 1)}
-      disabled={currentPage === 1}
-      className="px-3 py-1 rounded border disabled:opacity-40"
-    >
-      «
-    </button>
-
-    {/* Números de página */}
-    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-      <button
-        key={page}
-        onClick={() => goToPage(page)}
-        className={`px-3 py-1 rounded border ${
-          currentPage === page
-            ? 'bg-blue-600 text-white'
-            : 'hover:bg-slate-200'
-        }`}
-      >
-        {page}
-      </button>
-    ))}
-
-    {/* Botón siguiente */}
-    <button
-      onClick={() => goToPage(currentPage + 1)}
-      disabled={currentPage === totalPages}
-      className="px-3 py-1 rounded border disabled:opacity-40"
-    >
-      »
-    </button>
-
-  </div>
-)}
+      )}
 
     </div>
   )

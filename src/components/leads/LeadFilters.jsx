@@ -1,9 +1,14 @@
+"use client"
+
 import { useState, useEffect } from 'react'
 import { FiSearch } from 'react-icons/fi'
+import { motion, AnimatePresence } from "motion/react"
+import { LayoutGrid } from "lucide-react"
 import { useLocalTheme } from '../../context/useLocalTheme'
 import { getSubcampanias } from '../../services/leads.service'
+import ColumnCustomizer from '../leads/ColumnCustomizer'
 
-function LeadFilters({ onSearch }) {
+function LeadFilters({ onSearch, columns, setColumns }) {
 
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
@@ -12,6 +17,7 @@ function LeadFilters({ onSearch }) {
   const [idCamp, setIdCamp] = useState(null)
   const [subcampanias, setSubcampanias] = useState([])
   const [iniCampania, setIniCampania] = useState('')
+  const [showColumnPanel, setShowColumnPanel] = useState(false)
 
   // 🔥 Cargar campaña y subcampañas
   useEffect(() => {
@@ -54,65 +60,166 @@ function LeadFilters({ onSearch }) {
   }
 
   return (
-    <div className={`w-full p-4 rounded-xl shadow-md mb-6 ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-4 items-end">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className={`w-full p-4 rounded-xl shadow-md mb-6 transition-all duration-300 ${
+        isDark
+          ? 'bg-slate-800 shadow-black/20 hover:shadow-black/40'
+          : 'bg-white shadow-slate-200 hover:shadow-slate-300'
+      }`}
+    >
+      
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col sm:flex-row gap-4 items-end justify-between flex-wrap"
+      >
 
-        {/* FECHA */}
-        <div className="flex flex-col">
-          <label className="text-sm mb-1 font-medium">Fecha</label>
-          <input
-            type="date"
-            value={fecha}
-            onChange={(e) => setFecha(e.target.value)}
-            className={`px-3 py-2 rounded-lg border cursor-pointer ${
+        <div className="flex flex-col sm:flex-row gap-4 items-end flex-wrap">
+
+          {/* FECHA */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.05 }}
+            className="flex flex-col"
+          >
+            <label className="text-sm mb-1 font-medium">Fecha</label>
+
+            <motion.input
+              type="date"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+              whileFocus={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+              className={`px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 focus:ring-2 ${
+                isDark
+                  ? 'bg-slate-700 text-white border-slate-600 focus:ring-blue-500/40'
+                  : 'bg-slate-100 text-slate-800 border-slate-300 focus:ring-blue-400/40'
+              }`}
+            />
+          </motion.div>
+
+          {/* SUBCAMPAÑA */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.1 }}
+            className="flex flex-col w-64"
+          >
+            <label className="text-sm mb-1 font-medium">
+              Inicampania
+            </label>
+
+            <motion.select
+              value={iniCampania}
+              onChange={(e) => setIniCampania(e.target.value)}
+              whileFocus={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+              className={`px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 focus:ring-2 ${
+                isDark
+                  ? 'bg-slate-700 text-white border-slate-600 focus:ring-blue-500/40'
+                  : 'bg-slate-100 text-slate-800 border-slate-300 focus:ring-blue-400/40'
+              }`}
+            >
+              <option value="">Todas</option>
+
+              {subcampanias.map((item, index) => (
+                <option key={index} value={item.IniCampania}>
+                  {item.IniCampania}
+                </option>
+              ))}
+
+            </motion.select>
+          </motion.div>
+
+          {/* BOTÓN BUSCAR */}
+          <motion.button
+            type="submit"
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, delay: 0.15 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.94 }}
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md ${
               isDark
-                ? 'bg-slate-700 text-white border-slate-600'
-                : 'bg-slate-100 text-slate-800 border-slate-300'
-            }`}
-          />
-        </div>
-
-        {/* 🔥 SUBCAMPAÑA PLEGABLE */}
-        <div className="flex flex-col w-64">
-          <label className="text-sm mb-1 font-medium">
-            Inicampania
-          </label>
-
-          <select
-            value={iniCampania}
-            onChange={(e) => setIniCampania(e.target.value)}
-            className={`px-3 py-2 rounded-lg border cursor-pointer ${
-              isDark
-                ? 'bg-slate-700 text-white border-slate-600'
-                : 'bg-slate-100 text-slate-800 border-slate-300'
+                ? 'bg-[#354196] text-white hover:bg-[#304DB8]'
+                : 'bg-[#2C4361] hover:bg-[#1f3147] text-white'
             }`}
           >
-            <option value="">Todas</option>
 
-            {subcampanias.map((item, index) => (
-              <option key={index} value={item.IniCampania}>
-                {item.IniCampania}
-              </option>
-            ))}
+            <motion.span
+              whileHover={{ rotate: 12 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="flex items-center"
+            >
+              <FiSearch />
+            </motion.span>
 
-          </select>
+            Buscar
+          </motion.button>
+
         </div>
 
-        {/* BOTÓN */}
-        <button
-          type="submit"
-          className={`flex items-center gap-2 px-5 py-2 rounded-lg cursor-pointer ${
-            isDark
-              ? 'bg-blue-600 hover:bg-blue-700 text-white'
-              : 'bg-[#2C4361] hover:bg-[#1f3147] text-white'
-          }`}
+        {/* BOTÓN VISTA + PANEL */}
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, delay: 0.2 }}
+          className="relative"
         >
-          <FiSearch />
-          Buscar
-        </button>
+
+          <motion.button
+            type="button"
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.94 }}
+            transition={{ type: "spring", stiffness: 260 }}
+            onClick={() => setShowColumnPanel(!showColumnPanel)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm border shadow-sm transition-all duration-200 hover:shadow-md ${
+              isDark
+                ? 'bg-slate-700 hover:bg-slate-600 text-white border-slate-600'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-300'
+            }`}
+          >
+
+            <motion.span
+              animate={{ rotate: showColumnPanel ? 90 : 0 }}
+              transition={{ duration: 0.2 }}
+              className="flex items-center"
+            >
+              <LayoutGrid size={18} />
+            </motion.span>
+
+            Vista
+          </motion.button>
+
+          <AnimatePresence>
+
+            {showColumnPanel && (
+              <motion.div
+                initial={{ opacity: 0, y: -6, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.96 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="absolute right-0 mt-2 z-50"
+              >
+                <ColumnCustomizer
+                  columns={columns}
+                  setColumns={setColumns}
+                  show={showColumnPanel}
+                  setShow={setShowColumnPanel}
+                />
+              </motion.div>
+            )}
+
+          </AnimatePresence>
+
+        </motion.div>
 
       </form>
-    </div>
+
+    </motion.div>
   )
 }
 
