@@ -60,7 +60,7 @@ const smoothProgress = useSpring(motionProgress, {
     (v) => circumference - (v / 100) * circumference
   )
 
-  const spinnerColor = isDark ? "#6E1F1F" : "#D11F1F"
+  const spinnerColor = isDark ? "#D11F1F" : "#6E1F1F"
 
   useEffect(() => {
     let interval
