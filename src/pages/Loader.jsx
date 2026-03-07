@@ -43,11 +43,12 @@ export default function Loader({ show = true }) {
   const motionProgress = useMotionValue(0)
 
   // Configuración de muelle más fluida: menos masa, stiffness equilibrado
-  const smoothProgress = useSpring(motionProgress, {
-    stiffness: 60,
-    damping: 15,
-    mass: 0.5
-  })
+const smoothProgress = useSpring(motionProgress, {
+  stiffness: 45,
+  damping: 18,
+  mass: 0.35,
+  restDelta: 0.001
+})
 
   const size = 180
   const strokeWidth = 10
