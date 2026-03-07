@@ -55,6 +55,8 @@ function Login() {
         nombre: data.nombre,
         id_plataforma: data.id_plataforma,
         plataforma: data.plataforma_codigo,
+        hora_in: data.hora_in.slice(0, 5),
+        hora_out: data.hora_out.slice(0, 5)
       })
 
       localStorage.setItem('id_usuario', data.id_usuario)
@@ -62,6 +64,8 @@ function Login() {
       localStorage.setItem('nombre', data.nombre)
       localStorage.setItem('plataforma', data.plataforma_codigo)
       localStorage.setItem('id_plataforma', data.id_plataforma)
+      localStorage.setItem('hora_in', data.hora_in.slice(0, 5))
+      localStorage.setItem('hora_out', data.hora_out.slice(0, 5))
 
       navigate('/home')
 

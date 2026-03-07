@@ -24,18 +24,16 @@ function LeadFilters({ onSearch, columns, setColumns }) {
 
     const storedCamp = localStorage.getItem('id_campana')
 
-    if (storedCamp) {
-      const parsedCamp = parseInt(storedCamp)
-      setIdCamp(parsedCamp)
+    if (!storedCamp) return
 
-      getSubcampanias(parsedCamp)
-        .then(data => {
-          setSubcampanias(data)
-        })
-        .catch(err => {
-          console.error('Error cargando subcampañas:', err)
-        })
-    }
+    const parsedCamp = parseInt(storedCamp)
+    setIdCamp(parsedCamp)
+
+    getSubcampanias(parsedCamp)
+      .then(data => setSubcampanias(data))
+      .catch(err => {
+        console.error('Error cargando subcampañas:', err)
+      })
 
   }, [])
 
@@ -52,25 +50,26 @@ function LeadFilters({ onSearch, columns, setColumns }) {
       return
     }
 
+    // 🔥 Ahora el backend solo necesita esto
     onSearch({
       IdCamp: idCamp,
-      FechaIngreso: fecha,
-      IniCampania: iniCampania || null
+      FechaIngreso: fecha
     })
   }
 
   return (
+
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, ease: "easeOut" }}
+      transition={{ duration: 0.25 }}
       className={`w-full p-4 rounded-xl shadow-md mb-6 transition-all duration-300 ${
         isDark
           ? 'bg-slate-800 shadow-black/20 hover:shadow-black/40'
           : 'bg-white shadow-slate-200 hover:shadow-slate-300'
       }`}
     >
-      
+
       <form
         onSubmit={handleSubmit}
         className="flex flex-col sm:flex-row gap-4 items-end justify-between flex-wrap"
@@ -85,20 +84,23 @@ function LeadFilters({ onSearch, columns, setColumns }) {
             transition={{ duration: 0.25, delay: 0.05 }}
             className="flex flex-col"
           >
-            <label className="text-sm mb-1 font-medium">Fecha</label>
+
+            <label className="text-sm mb-1 font-medium">
+              Fecha
+            </label>
 
             <motion.input
               type="date"
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
               whileFocus={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
               className={`px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 focus:ring-2 ${
                 isDark
                   ? 'bg-slate-700 text-white border-slate-600 focus:ring-blue-500/40'
                   : 'bg-slate-100 text-slate-800 border-slate-300 focus:ring-blue-400/40'
               }`}
             />
+
           </motion.div>
 
           {/* SUBCAMPAÑA */}
@@ -108,6 +110,7 @@ function LeadFilters({ onSearch, columns, setColumns }) {
             transition={{ duration: 0.25, delay: 0.1 }}
             className="flex flex-col w-64"
           >
+
             <label className="text-sm mb-1 font-medium">
               Inicampania
             </label>
@@ -116,13 +119,13 @@ function LeadFilters({ onSearch, columns, setColumns }) {
               value={iniCampania}
               onChange={(e) => setIniCampania(e.target.value)}
               whileFocus={{ scale: 1.02 }}
-              transition={{ duration: 0.2 }}
               className={`px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 focus:ring-2 ${
                 isDark
                   ? 'bg-slate-700 text-white border-slate-600 focus:ring-blue-500/40'
                   : 'bg-slate-100 text-slate-800 border-slate-300 focus:ring-blue-400/40'
               }`}
             >
+
               <option value="">Todas</option>
 
               {subcampanias.map((item, index) => (
@@ -132,6 +135,7 @@ function LeadFilters({ onSearch, columns, setColumns }) {
               ))}
 
             </motion.select>
+
           </motion.div>
 
           {/* BOTÓN BUSCAR */}
@@ -158,11 +162,12 @@ function LeadFilters({ onSearch, columns, setColumns }) {
             </motion.span>
 
             Buscar
+
           </motion.button>
 
         </div>
 
-        {/* BOTÓN VISTA + PANEL */}
+        {/* PANEL DE COLUMNAS */}
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -192,25 +197,30 @@ function LeadFilters({ onSearch, columns, setColumns }) {
             </motion.span>
 
             Vista
+
           </motion.button>
 
           <AnimatePresence>
 
             {showColumnPanel && (
+
               <motion.div
                 initial={{ opacity: 0, y: -6, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.96 }}
-                transition={{ duration: 0.18, ease: "easeOut" }}
+                transition={{ duration: 0.18 }}
                 className="absolute right-0 mt-2 z-50"
               >
+
                 <ColumnCustomizer
                   columns={columns}
                   setColumns={setColumns}
                   show={showColumnPanel}
                   setShow={setShowColumnPanel}
                 />
+
               </motion.div>
+
             )}
 
           </AnimatePresence>
@@ -220,7 +230,9 @@ function LeadFilters({ onSearch, columns, setColumns }) {
       </form>
 
     </motion.div>
+
   )
+
 }
 
 export default LeadFilters

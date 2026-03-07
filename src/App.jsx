@@ -1,24 +1,52 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+
 import Login from './routes/Login'
 import AddUser from './routes/AddUser'
 import Home from './routes/Home'
+
 import ProtectedRoute from '../components/ProtectedRoute'
 import PublicRoute from '../components/PublicRoute'
 import PlatformRoute from './components/PlatformRoute'
+
 import Reniec from './pages/Reniec'
 import Monitor from './routes/Monitor'
 import Carterizacion from './routes/Carterizacion'
+
 import { KeepAliveProvider } from './context/KeepAliveContext'
+
+import Loader from './pages/Loader'
 import Header from './routes/header.jsx'
 
-function App() {
+
+function AppRoutes() {
+
+  const location = useLocation()
+  const [loadingRoute, setLoadingRoute] = useState(false)
+
   const isAuth = localStorage.getItem('auth')
 
+  useEffect(() => {
+
+    setLoadingRoute(true)
+
+    const timer = setTimeout(() => {
+      setLoadingRoute(false)
+    }, 400)
+
+    return () => clearTimeout(timer)
+
+  }, [location.pathname])
+
+
   return (
-    <BrowserRouter>
+    <>
+      {/* LOADER GLOBAL */}
+      <Loader show={loadingRoute} />
+
       <Routes>
 
-        {/* LOGIN (bloqueado si ya hay sesión) */}
+        {/* LOGIN */}
         <Route
           path="/login"
           element={
@@ -27,7 +55,8 @@ function App() {
             </PublicRoute>
           }
         />
-                {/* adduser 
+
+        {/* adduser 
         <Route
           path="/add-user"
           element={
@@ -91,7 +120,7 @@ function App() {
           }
         />
 
-        {/* REDIRECCIÓN INTELIGENTE POR DEFECTO */}
+        {/* REDIRECCIÓN */}
         <Route
           path="*"
           element={
@@ -103,6 +132,16 @@ function App() {
         />
 
       </Routes>
+    </>
+  )
+}
+
+
+function App() {
+
+  return (
+    <BrowserRouter>
+      <AppRoutes />
     </BrowserRouter>
   )
 }

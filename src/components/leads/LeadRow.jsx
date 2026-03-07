@@ -31,6 +31,7 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
         )
 
       case 'idkey':
+      case 'IdKey_Computado':
         return (
           <motion.td
             {...cellAnimation}
@@ -46,24 +47,17 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
           </motion.td>
         )
 
-      case 'perfil':
+      case 'dni':
         return (
           <motion.td {...cellAnimation} className={baseClass}>
-            {lead.perfil || '-'}
+            {lead.dni || '-'}
           </motion.td>
         )
 
-      case 'CampaOrigen':
+      case 'nombre_completo':
         return (
           <motion.td {...cellAnimation} className={baseClass}>
-            {lead.CampaOrigen || '-'}
-          </motion.td>
-        )
-
-      case 'idusuario':
-        return (
-          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
-            {lead.idusuario?.slice(0, 8) || '-'}
+            {lead.nombre_completo || '-'}
           </motion.td>
         )
 
@@ -83,6 +77,27 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
           </motion.td>
         )
 
+      case 'email':
+        return (
+          <motion.td {...cellAnimation} className={baseClass}>
+            {lead.email || '-'}
+          </motion.td>
+        )
+
+      case 'email2':
+        return (
+          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
+            {lead.email2 || '-'}
+          </motion.td>
+        )
+
+      case 'perfil':
+        return (
+          <motion.td {...cellAnimation} className={baseClass}>
+            {lead.perfil || '-'}
+          </motion.td>
+        )
+
       case 'segmento':
         return (
           <motion.td {...cellAnimation} className={baseClass}>
@@ -97,10 +112,38 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
           </motion.td>
         )
 
+      case 'CampaOrigen':
+        return (
+          <motion.td {...cellAnimation} className={baseClass}>
+            {lead.CampaOrigen || '-'}
+          </motion.td>
+        )
+
       case 'pautanameanuncio':
         return (
           <motion.td {...cellAnimation} className={baseClass}>
             {lead.pautanameanuncio || '-'}
+          </motion.td>
+        )
+
+      case 'modelo':
+        return (
+          <motion.td {...cellAnimation} className={baseClass}>
+            {lead.modelo || '-'}
+          </motion.td>
+        )
+
+      case 'plataforma':
+        return (
+          <motion.td {...cellAnimation} className={baseClass}>
+            {lead.plataforma || '-'}
+          </motion.td>
+        )
+
+      case 'politica':
+        return (
+          <motion.td {...cellAnimation} className={baseClass}>
+            {lead.politica || '-'}
           </motion.td>
         )
 
@@ -110,6 +153,21 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
             {lead.fecha_creacion
               ? lead.fecha_creacion.toString().slice(0, 8)
               : '-'}
+          </motion.td>
+        )
+
+      case 'hora_creacion':
+      case 'horac':
+        return (
+          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
+            {lead.hora_creacion || lead.horac || '-'}
+          </motion.td>
+        )
+
+      case 'horai':
+        return (
+          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
+            {lead.horai || '-'}
           </motion.td>
         )
 
@@ -181,13 +239,6 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
           </motion.td>
         )
 
-      case 'horai':
-        return (
-          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
-            {lead.horai || '-'}
-          </motion.td>
-        )
-
       case 'rswmejoridcall':
         return (
           <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
@@ -231,15 +282,22 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.2 }}
       whileHover={{
-        backgroundColor: isDark ? "rgba(40,44,59,0.9)" : "rgba(229,231,235,0.7)"
+        backgroundColor: isDark
+          ? "rgba(40,44,59,0.9)"
+          : "rgba(229,231,235,0.7)"
       }}
       className="text-sm"
     >
-      {columns.map((col) => (
-        <React.Fragment key={col.key}>
-          {renderCell(col.key)}
-        </React.Fragment>
-      ))}
+      {columns.map((col) => {
+
+        const key = col.key || col.query_vista
+
+        return (
+          <React.Fragment key={key}>
+            {renderCell(key)}
+          </React.Fragment>
+        )
+      })}
     </motion.tr>
   )
 }

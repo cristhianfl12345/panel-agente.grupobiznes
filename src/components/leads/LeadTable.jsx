@@ -22,6 +22,9 @@ export default function LeadTable({
 
   const visibleColumns = columns?.filter(col => col.visible) || []
 
+  const getKey = (col) => col.key || col.query_vista
+  const getLabel = (col) => col.label || col.Vista
+
   const handleDragStart = (key) => {
     setDraggedKey(key)
   }
@@ -31,8 +34,8 @@ export default function LeadTable({
 
     const newColumns = [...columns]
 
-    const fromIndex = newColumns.findIndex(c => c.key === draggedKey)
-    const toIndex = newColumns.findIndex(c => c.key === targetKey)
+    const fromIndex = newColumns.findIndex(c => (c.key || c.query_vista) === draggedKey)
+    const toIndex = newColumns.findIndex(c => (c.key || c.query_vista) === targetKey)
 
     if (fromIndex === -1 || toIndex === -1) return
 
@@ -44,7 +47,7 @@ export default function LeadTable({
   }
 
   // PAGINACIÓN
-  const rowsPerPage = 13
+  const rowsPerPage = 20
   const [currentPage, setCurrentPage] = useState(1)
   const totalPages = Math.ceil(leads.length / rowsPerPage)
 
@@ -100,49 +103,56 @@ export default function LeadTable({
 
               <AnimatePresence initial={false}>
 
-                {visibleColumns.map((col, i) => (
+                {visibleColumns.map((col, i) => {
 
-                  <th
-                    key={col.key}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={() => handleDrop(col.key)}
-                    className={`
-                      border
-                      px-3 py-2
-                      text-left
-                      whitespace-nowrap
-                      transition-colors
-                      ${isDark ? 'border-slate-700' : 'border-slate-300'}
-                      ${i === 0 ? "rounded-tl-xl" : ""}
-                      ${i === visibleColumns.length - 1 ? "rounded-tr-xl" : ""}
-                    `}
-                  >
+                  const key = getKey(col)
+                  const label = getLabel(col)
 
-                    <motion.div
-                      draggable
-                      onDragStart={() => handleDragStart(col.key)}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center gap-2 cursor-move select-none group"
+                  return (
+
+                    <th
+                      key={key}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={() => handleDrop(key)}
+                      className={`
+                        border
+                        px-3 py-2
+                        text-left
+                        whitespace-nowrap
+                        transition-colors
+                        ${isDark ? 'border-slate-700' : 'border-slate-300'}
+                        ${i === 0 ? "rounded-tl-xl" : ""}
+                        ${i === visibleColumns.length - 1 ? "rounded-tr-xl" : ""}
+                      `}
                     >
 
                       <motion.div
-                        whileHover={{ rotate: 90, scale: 1.2 }}
-                        transition={{ type: "spring", stiffness: 300 }}
-                        className="text-slate-400 group-hover:text-blue-500"
+                        draggable
+                        onDragStart={() => handleDragStart(key)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center gap-2 cursor-move select-none group"
                       >
-                        <ArrowRightLeft size={14}/>
+
+                        <motion.div
+                          whileHover={{ rotate: 90, scale: 1.2 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                          className="text-slate-400 group-hover:text-blue-500"
+                        >
+                          <ArrowRightLeft size={14}/>
+                        </motion.div>
+
+                        <span className="font-medium whitespace-nowrap">
+                          {label}
+                        </span>
+
                       </motion.div>
 
-                      <span className="font-medium whitespace-nowrap">
-                        {col.label}
-                      </span>
+                    </th>
 
-                    </motion.div>
+                  )
 
-                  </th>
-
-                ))}
+                })}
 
               </AnimatePresence>
 
