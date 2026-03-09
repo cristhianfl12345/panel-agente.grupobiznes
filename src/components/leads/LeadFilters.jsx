@@ -13,19 +13,20 @@ function LeadFilters({ onSearch, columns, setColumns }) {
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
 
-const [fecha, setFecha] = useState(() => {
-  const today = new Date()
-  const yyyy = today.getFullYear()
-  const mm = String(today.getMonth() + 1).padStart(2, '0')
-  const dd = String(today.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-})
+  const [fecha, setFecha] = useState(() => {
+    const today = new Date()
+    const yyyy = today.getFullYear()
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const dd = String(today.getDate()).padStart(2, '0')
+    return `${yyyy}-${mm}-${dd}`
+  })
+
   const [idCamp, setIdCamp] = useState(null)
   const [subcampanias, setSubcampanias] = useState([])
   const [iniCampania, setIniCampania] = useState('')
   const [showColumnPanel, setShowColumnPanel] = useState(false)
 
-  // 🔥 Cargar campaña y subcampañas
+  // cargar campaña y subcampañas
   useEffect(() => {
 
     const storedCamp = localStorage.getItem('id_campana')
@@ -36,9 +37,13 @@ const [fecha, setFecha] = useState(() => {
     setIdCamp(parsedCamp)
 
     getSubcampanias(parsedCamp)
-      .then(data => setSubcampanias(data))
+      .then(data => {
+        setSubcampanias(data || [])
+        setIniCampania('')
+      })
       .catch(err => {
         console.error('Error cargando subcampañas:', err)
+        setSubcampanias([])
       })
 
   }, [])
@@ -56,10 +61,10 @@ const [fecha, setFecha] = useState(() => {
       return
     }
 
-    // 🔥 Ahora el backend solo necesita esto
     onSearch({
       IdCamp: idCamp,
-      FechaIngreso: fecha
+      FechaIngreso: fecha,
+      inicampania: iniCampania
     })
   }
 
@@ -134,11 +139,18 @@ const [fecha, setFecha] = useState(() => {
 
               <option value="">Todas</option>
 
-              {subcampanias.map((item, index) => (
-                <option key={index} value={item.IniCampania}>
-                  {item.IniCampania}
-                </option>
-              ))}
+              {subcampanias.map((item) => {
+                if (!item?.IniCampania) return null
+
+                return (
+                  <option
+                    key={item.IniCampania}
+                    value={item.IniCampania}
+                  >
+                    {item.IniCampania}
+                  </option>
+                )
+              })}
 
             </motion.select>
 

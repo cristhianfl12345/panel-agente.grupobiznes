@@ -55,62 +55,63 @@ export default function Leads() {
   }
 
 
-  const fetchLeads = async ({ IdCamp, FechaIngreso }) => {
+const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
 
-    if (!FechaIngreso || !IdCamp) {
-      alert('Debe seleccionar fecha')
-      return
-    }
+  if (!FechaIngreso || !IdCamp) {
+    alert('Debe seleccionar fecha')
+    return
+  }
 
-    setLoading(true)
-    setSearched(true)
+  setLoading(true)
+  setSearched(true)
 
-    try {
+  try {
 
-      const response = await getLeads(
-        FechaIngreso,
-        IdCamp
-      )
+    const response = await getLeads(
+      FechaIngreso,
+      IdCamp,
+      inicampania
+    )
 
-      const rows = response?.data || []
+    const rows = response?.data || []
 
-      setLeads(rows)
+    setLeads(rows)
 
-      if (rows.length > 0) {
+    if (rows.length > 0) {
 
-        const vistas = await getVistasCampana(IdCamp)
+      const vistas = await getVistasCampana(IdCamp)
 
-        const jsonKeys = Object.keys(rows[0])
+      const jsonKeys = Object.keys(rows[0])
 
-        const matchedColumns = vistas
-          .filter(col => jsonKeys.includes(col.query_vista))
-          .map(col => ({
-            key: col.query_vista,
-            label: col.Vista,
-            visible: col.activo
-          }))
+      const matchedColumns = vistas
+        .filter(col => jsonKeys.includes(col.query_vista))
+        .map(col => ({
+          key: col.query_vista,
+          label: col.Vista,
+          visible: col.activo
+        }))
 
-        setColumns([
-          { key: 'index', label: 'N', visible: true },
-          ...matchedColumns
-        ])
-
-      }
-
-    } catch (err) {
-
-      console.error('Error obteniendo leads:', err)
-
-      setLeads([])
-      setColumns([])
-
-    } finally {
-
-      setLoading(false)
+      setColumns([
+        { key: 'index', label: 'N', visible: true },
+        ...matchedColumns
+      ])
 
     }
+
+  } catch (err) {
+
+    console.error('Error obteniendo leads:', err)
+
+    setLeads([])
+    setColumns([])
+
+  } finally {
+
+    setLoading(false)
 
   }
+
+}
 
 
   const filteredLeads = useMemo(() => {
