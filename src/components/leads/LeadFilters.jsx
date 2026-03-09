@@ -13,7 +13,13 @@ function LeadFilters({ onSearch, columns, setColumns }) {
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
 
-  const [fecha, setFecha] = useState('')
+const [fecha, setFecha] = useState(() => {
+  const today = new Date()
+  const yyyy = today.getFullYear()
+  const mm = String(today.getMonth() + 1).padStart(2, '0')
+  const dd = String(today.getDate()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd}`
+})
   const [idCamp, setIdCamp] = useState(null)
   const [subcampanias, setSubcampanias] = useState([])
   const [iniCampania, setIniCampania] = useState('')
@@ -148,8 +154,8 @@ function LeadFilters({ onSearch, columns, setColumns }) {
             whileTap={{ scale: 0.94 }}
             className={`flex items-center gap-2 px-5 py-2 rounded-lg cursor-pointer transition-all duration-200 shadow-sm hover:shadow-md ${
               isDark
-                ? 'bg-[#354196] text-white hover:bg-[#304DB8]'
-                : 'bg-[#2C4361] hover:bg-[#1f3147] text-white'
+                ? 'bg-[#74F2F2] text-black hover:bg-[#30BABA]'
+                : 'bg-[#354196] text-white hover:bg-[#1f3147]'
             }`}
           >
 

@@ -23,12 +23,12 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
 
     switch (key) {
 
-      case 'index':
-        return (
-          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
-            {index}
-          </motion.td>
-        )
+    case 'index':
+  return (
+    <motion.td className={`${baseClass} text-center`}>
+      {index}
+    </motion.td>
+  )
 
       case 'idkey':
       case 'IdKey_Computado':

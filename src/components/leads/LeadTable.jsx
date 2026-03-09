@@ -29,23 +29,28 @@ export default function LeadTable({
     setDraggedKey(key)
   }
 
-  const handleDrop = (targetKey) => {
-    if (!draggedKey) return
+const handleDrop = (targetKey) => {
+  if (!draggedKey) return
 
-    const newColumns = [...columns]
+  // ❌ No permitir mover index
+  if (draggedKey === "index") return
 
-    const fromIndex = newColumns.findIndex(c => (c.key || c.query_vista) === draggedKey)
-    const toIndex = newColumns.findIndex(c => (c.key || c.query_vista) === targetKey)
+  // ❌ No permitir que nada se coloque antes de index
+  if (targetKey === "index") return
 
-    if (fromIndex === -1 || toIndex === -1) return
+  const newColumns = [...columns]
 
-    const [moved] = newColumns.splice(fromIndex, 1)
-    newColumns.splice(toIndex, 0, moved)
+  const fromIndex = newColumns.findIndex(c => (c.key || c.query_vista) === draggedKey)
+  const toIndex = newColumns.findIndex(c => (c.key || c.query_vista) === targetKey)
 
-    setColumns(newColumns)
-    setDraggedKey(null)
-  }
+  if (fromIndex === -1 || toIndex === -1) return
 
+  const [moved] = newColumns.splice(fromIndex, 1)
+  newColumns.splice(toIndex, 0, moved)
+
+  setColumns(newColumns)
+  setDraggedKey(null)
+}
   // PAGINACIÓN
   const rowsPerPage = 20
   const [currentPage, setCurrentPage] = useState(1)
@@ -127,20 +132,24 @@ export default function LeadTable({
                     >
 
                       <motion.div
-                        draggable
-                        onDragStart={() => handleDragStart(key)}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className="flex items-center gap-2 cursor-move select-none group"
-                      >
+  draggable={key !== "index"}
+  onDragStart={() => key !== "index" && handleDragStart(key)}
+  whileHover={key !== "index" ? { scale: 1.05 } : {}}
+  whileTap={key !== "index" ? { scale: 0.95 } : {}}
+  className={`flex items-center gap-2 select-none ${
+    key === "index" ? "" : "cursor-move group"
+  }`}
+>
 
-                        <motion.div
-                          whileHover={{ rotate: 90, scale: 1.2 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                          className="text-slate-400 group-hover:text-blue-500"
-                        >
-                          <ArrowRightLeft size={14}/>
-                        </motion.div>
+                       {key !== "index" && (
+  <motion.div
+    whileHover={{ rotate: 90, scale: 1.2 }}
+    transition={{ type: "spring", stiffness: 300 }}
+    className="text-slate-400 group-hover:text-blue-500"
+  >
+    <ArrowRightLeft size={14}/>
+  </motion.div>
+)}
 
                         <span className="font-medium whitespace-nowrap">
                           {label}
