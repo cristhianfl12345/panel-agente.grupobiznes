@@ -60,6 +60,8 @@ function Home() {
   const handleSelectCampana = (campana) => {
     localStorage.setItem('id_campana', campana.id_campana)
     localStorage.setItem('nombre_campana', campana.nombre)
+    localStorage.setItem('campanaSeleccionada', JSON.stringify(campana))
+     localStorage.setItem('nombreCampana', campana.nombre)
     navigate('/monitor')
   }
 

@@ -18,13 +18,12 @@ function Carterizacion() {
       </h1>
 
       <p className="text-slate-600 mb-6">
-        Gestión y asignación de carteras por usuario.
+        1
       </p>
 
       <div className="p-6 rounded-xl bg-white shadow">
         <p className="text-slate-500">
-          Aquí se configurarán campañas, asignación de leads
-          y reglas de distribución.
+          1
         </p>
       </div>
     </div>
