@@ -136,7 +136,7 @@ function Home() {
               }
             `}
           >
-            {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
+            {isDark ? <FiSun className='cursor-pointer' size={18} /> : <FiMoon className='cursor-pointer' size={18} />}
           </motion.button>
 
           <motion.button
@@ -212,7 +212,7 @@ function Home() {
       className={`
         w-full flex items-center justify-center gap-2
         px-6 py-4 rounded-xl shadow-md
-        transition
+        transition cursor-pointer
         ${isDark
           ? 'bg-yellow-500 hover:bg-yellow-600 text-black'
           : 'bg-gradient-to-r from-violet-600 to-purple-500 text-white'
@@ -241,7 +241,7 @@ function Home() {
         className={`
           w-full flex items-center justify-between
           px-6 py-4 rounded-xl shadow-md
-          transition
+          transition cursor-pointer
           ${isDark
             ? 'bg-[#74F2F2] text-black hover:brightness-95'
             : 'bg-[#354196] text-white hover:brightness-110'
@@ -320,7 +320,7 @@ function Home() {
       className={`
         w-full flex items-center justify-center gap-2
         px-6 py-4 rounded-xl shadow-md
-        transition
+        transition cursor-pointer
         ${isDark
           ? 'bg-[#DE546C] text-black hover:brightness-95'
           : 'bg-[#732230] text-white hover:brightness-110'

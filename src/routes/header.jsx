@@ -90,7 +90,7 @@ export default function Header() {
           }}
         >
           <WiStars
-            className={`size-10 ${
+            className={`size-10 cursor-pointer ${
               isDark ? 'text-yellow-400' : 'text-gray-700'
             }`}
           />
@@ -103,7 +103,7 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25 }}
-            className="whitespace-nowrap"
+            className="whitespace-nowrap cursor-pointer"
           >
             {nombreCampana ? nombreCampana : 'BiznesDigital'}
           </motion.span>
@@ -183,7 +183,7 @@ export default function Header() {
             animate={{ rotate: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
-            {isDark ? <FiSun size={18} /> : <FiMoon size={18} />}
+            {isDark ? <FiSun className='cursor-pointer' size={18} /> : <FiMoon className='cursor-pointer' size={18} />}
           </motion.div>
 
         </motion.button>
