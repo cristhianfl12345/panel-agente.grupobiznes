@@ -171,21 +171,30 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
           </motion.td>
         )
 
-      case 'discador':
-        return (
-          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
-            {lead.discador && (
-              <FiPhoneCall className="text-green-600 mx-auto" />
-            )}
-          </motion.td>
-        )
+case 'discador':
+  return (
+    <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
+      <div className="flex items-center justify-center gap-2">
+        {/* Mostramos el valor de la columna */}
+        <span>{lead.discador}</span>
+        
+        
+        {lead.discador && (
+          <FiPhoneCall className="text-green-600" />
+        )}
+      </div>
+    </motion.td>
+  )
 
       case 'gestiones':
         return (
           <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
+            <div className="flex items-center justify-center gap-2">
+              <span>{lead.gestiones}</span>
             {lead.gestiones && (
-              <FiClipboard className="text-blue-600 mx-auto" />
+              <FiClipboard className="text-blue-600" />
             )}
+            </div>
           </motion.td>
         )
 
@@ -194,7 +203,7 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
           <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
             {lead.ultimocodcontacto ? (
               <span className="inline-block bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
-                {lead.ultimocodcontacto} - {lead.UltNivel2}
+                {lead.ultimocodcontacto} - {lead.ultNivel2}
               </span>
             ) : (
               <FaPhone className="text-red-500 mx-auto" />
