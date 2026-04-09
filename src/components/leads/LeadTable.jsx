@@ -170,29 +170,18 @@ const handleDrop = (targetKey) => {
           </thead>
 
           {/* BODY */}
-          <tbody>
-
-            <AnimatePresence>
-
-              {!loading && paginatedLeads.map((lead, index) => (
-
-                <LeadRow
-                  key={lead.idkey}
-                  lead={lead}
-                  index={
-                    leads.length -
-                    ((currentPage - 1) * rowsPerPage + index)
-                  }
-                  onCopy={onCopy}
-                  columns={visibleColumns}
-                  isDark={isDark}
-                />
-
-              ))}
-
-            </AnimatePresence>
-
-          </tbody>
+<tbody key={currentPage}>
+  {!loading && paginatedLeads.map((lead, index) => (
+    <LeadRow
+      key={`${lead.idkey}-${currentPage}`} // solucion de renderizado sobrescrito
+      lead={lead}
+      index={leads.length - ((currentPage - 1) * rowsPerPage + index)}
+      onCopy={onCopy}
+      columns={visibleColumns}
+      isDark={isDark}
+    />
+  ))}
+</tbody>
 
         </table>
 

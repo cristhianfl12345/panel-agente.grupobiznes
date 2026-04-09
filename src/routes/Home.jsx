@@ -185,6 +185,7 @@ function Home() {
           </motion.p>
 
 {/* BOTONES PRINCIPALES EN 3 COLUMNAS */}
+{/* BOTONES PRINCIPALES CENTRADOS DINÁMICAMENTE */}
 <motion.div
   initial="hidden"
   animate="show"
@@ -196,7 +197,7 @@ function Home() {
       }
     }
   }}
-  className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-10"
+  className="flex flex-wrap justify-center gap-6 mt-10"
 >
 
   {/* BOTÓN RENIEC */}
@@ -210,7 +211,8 @@ function Home() {
       whileTap={{ scale: 0.95 }}
       onClick={() => navigate('/reniec')}
       className={`
-        w-full flex items-center justify-center gap-2
+        w-full sm:w-[300px]
+        flex items-center justify-center gap-2
         px-6 py-4 rounded-xl shadow-md
         transition cursor-pointer
         ${isDark
@@ -231,9 +233,8 @@ function Home() {
         hidden: { opacity: 0, y: 20 },
         show: { opacity: 1, y: 0 }
       }}
-      className="w-full relative"
+      className="w-full sm:w-[300px] relative"
     >
-
       <motion.button
         whileHover={{ scale: 1.05, y: -2 }}
         whileTap={{ scale: 0.95 }}
@@ -318,7 +319,8 @@ function Home() {
       whileTap={{ scale: 0.95 }}
       onClick={() => navigate('/cartera')}
       className={`
-        w-full flex items-center justify-center gap-2
+        w-full sm:w-[300px]
+        flex items-center justify-center gap-2
         px-6 py-4 rounded-xl shadow-md
         transition cursor-pointer
         ${isDark

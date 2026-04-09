@@ -164,12 +164,20 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
           </motion.td>
         )
 
-      case 'horai':
-        return (
-          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
-            {lead.horai || '-'}
-          </motion.td>
-        )
+case 'horai': {
+  const h = lead.horai;
+  
+  // Verificamos si es un objeto y tiene los datos
+  const tiempoFormateado = h && typeof h === 'object' 
+    ? `${h.minutes}m ${h.seconds}s` 
+    : (h || '-');
+
+  return (
+    <motion.td {...cellAnimation} className={`${baseClass} text-center font-mono text-xs`}>
+      {tiempoFormateado}
+    </motion.td>
+  );
+}
 
 case 'discador':
   return (
@@ -192,25 +200,44 @@ case 'discador':
             <div className="flex items-center justify-center gap-2">
               <span>{lead.gestiones}</span>
             {lead.gestiones && (
-              <FiClipboard className="text-blue-600" />
+              <FiClipboard className="text-blue-500" />
             )}
             </div>
           </motion.td>
         )
 
-      case 'ultimocodcontacto':
+case 'ultimocodcontacto': {
+  // Mapeo de estilos según el código
+  const statusStyles = {
+    "NC": "bg-red-100 text-red-700 border-red-200",
+    "CD": "bg-green-100 text-green-700 border-green-200",
+    "CND": "bg-yellow-100 text-yellow-700 border-yellow-200",
+  };
+
+  // Seleccionamos el estilo o un gris por defecto
+  const currentStyle = statusStyles[lead.ultimocodcontacto] || "bg-gray-100 text-gray-700 border-gray-500";
+
+  return (
+    <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
+      {lead.ultimocodcontacto || lead.ultnivel2 ? (
+  <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${currentStyle}`}>
+    {lead.ultimocodcontacto} - {lead.ultnivel2}
+  </span>
+) : (
+  <FaPhone className="text-red-400 mx-auto" />
+)}
+    </motion.td>
+  );
+}
+case 'ultimofecha':
         return (
           <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
-            {lead.ultimocodcontacto ? (
-              <span className="inline-block bg-red-100 text-red-700 px-2 py-1 rounded text-xs">
-                {lead.ultimocodcontacto} - {lead.ultNivel2}
-              </span>
-            ) : (
-              <FaPhone className="text-red-500 mx-auto" />
-            )}
+            {lead.ultimofecha
+              ? lead.ultimofecha.toString().slice(0, 10)
+              : '-'}
           </motion.td>
         )
-
+        {/* ANTERIOR ULTIMO FECHA, SE DEJÓ GUARDADO POR SI SE QUIERE VOLVER A ESE FORMATO CON ICONO
       case 'ultimofecha':
         return (
           <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
@@ -221,20 +248,31 @@ case 'discador':
               />
             )}
           </motion.td>
-        )
+        ) */}
 
-      case 'mejorcodcontacto':
-        return (
-          <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
-            {lead.mejorcodcontacto ? (
-              <span className="inline-block bg-green-100 text-green-700 px-2 py-1 rounded text-xs">
-                {lead.mejorcodcontacto} - {lead.MejorNivel2}
-              </span>
-            ) : (
-              <FiPhoneOff className="text-gray-400 mx-auto" />
-            )}
-          </motion.td>
-        )
+ case 'mejorcodcontacto': {
+  // Definimos los estilos por código
+  const statusStyles = {
+    "NC": "bg-red-100 text-red-700 border-red-200",
+    "CD": "bg-green-100 text-green-700 border-green-200",
+    "CND": "bg-yellow-100 text-yellow-700 border-yellow-200",
+  };
+
+  // Obtenemos la clase según el valor, o una por defecto si no coincide
+  const currentStyle = statusStyles[lead.mejorcodcontacto] || "bg-gray-100 text-gray-700 border-gray-500";
+
+  return (
+    <motion.td {...cellAnimation} className={`${baseClass} text-center`}>
+      {lead.mejorcodcontacto || lead.mejornivel2 ? (
+        <span className={`inline-block px-2 py-1 rounded text-xs font-medium border ${currentStyle}`}>
+          {lead.mejorcodcontacto} - {lead.mejornivel2}
+        </span>
+      ) : (
+        <FaPhone className="text-red-400 mx-auto" />
+      )}
+    </motion.td>
+  );
+}
 
       case 'mejorfecha':
         return (
@@ -286,27 +324,26 @@ case 'discador':
   }
 
   return (
-    <motion.tr
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.2 }}
-      whileHover={{
-        backgroundColor: isDark
-          ? "rgba(40,44,59,0.9)"
-          : "rgba(229,231,235,0.7)"
-      }}
-      className="text-sm"
-    >
-      {columns.map((col) => {
-
-        const key = col.key || col.query_vista
-
-        return (
-          <React.Fragment key={key}>
-            {renderCell(key)}
-          </React.Fragment>
-        )
-      })}
-    </motion.tr>
-  )
+<motion.tr
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }} // <--- ESTO ES VITAL
+    transition={{ duration: 0.15 }} // Una transición rápida para que no se encime
+    whileHover={{
+      backgroundColor: isDark
+        ? "rgba(40,44,59,0.9)"
+        : "rgba(229,231,235,0.7)"
+    }}
+    className="text-sm"
+  >
+    {columns.map((col) => {
+      const key = col.key || col.query_vista
+      return (
+        <React.Fragment key={key}>
+          {renderCell(key)}
+        </React.Fragment>
+      )
+    })}
+  </motion.tr>
+)
 }

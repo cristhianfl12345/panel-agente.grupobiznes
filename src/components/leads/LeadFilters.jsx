@@ -140,17 +140,17 @@ function LeadFilters({ onSearch, columns, setColumns }) {
               <option value="">Todas</option>
 
               {subcampanias.map((item) => {
-                if (!item?.IniCampania) return null
+  if (!item?.IniCampania) return null
 
-                return (
-                  <option
-                    key={item.IniCampania}
-                    value={item.IniCampania}
-                  >
-                    {item.IniCampania}
-                  </option>
-                )
-              })}
+  return (
+    <option
+      key={item.IniCampania}
+      value={item.IniCampania}
+    >
+      {item.IniCampania}
+    </option>
+  )
+})}
 
             </motion.select>
 

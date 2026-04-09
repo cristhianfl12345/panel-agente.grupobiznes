@@ -74,13 +74,14 @@ export default function ReniecSearchForm({ onSearch, loading }) {
           >
             Nombre Completo
           </button>
-          <button
+         {/* <button
             type="button"
             onClick={() => setTipo('APELLIDOS')}
             className={`cursor-pointer ${tab(tipo === 'APELLIDOS')}`}
           >
             Apellidos
           </button>
+         */}
         </div>
       </div>
 

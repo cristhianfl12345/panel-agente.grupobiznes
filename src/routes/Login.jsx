@@ -208,20 +208,20 @@ function Login() {
 
         </form>
 
-        {/* Link 
+        { 
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
         >
-          <Link
+        {/*  <Link
             to="/add-user"
             className="block text-center text-sm text-blue-400 mt-4 hover:underline transition"
           >
             Crear / resetear usuario
-          </Link>
+          </Link> */}
         </motion.div>
-*/}
+}
       </motion.div>
     </motion.div>
   )
