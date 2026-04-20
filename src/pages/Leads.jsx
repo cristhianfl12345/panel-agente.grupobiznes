@@ -1,5 +1,6 @@
 "use client"
-
+import { useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useState, useMemo } from 'react'
 import { getLeads, getVistasCampana } from '../services/leads.service'
 import LeadFilters from '../components/leads/LeadFilters'
@@ -12,6 +13,12 @@ import Loader from '../pages/Loader'
 export default function Leads() {
 
   const { user } = useAuth()
+  const [searchParams] = useSearchParams()
+
+const campFromURL = searchParams.get("camp")
+const embedKey = searchParams.get("embedKey")
+
+const isEmbed = !!embedKey
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
 
@@ -25,13 +32,13 @@ export default function Leads() {
   const [toast, setToast] = useState(null)
 
 
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        Cargando sesión...
-      </div>
-    )
-  }
+if (!user && !isEmbed) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      Cargando sesión...
+    </div>
+  )
+}
 
 
   const handleCopy = async (text) => {
@@ -113,6 +120,17 @@ const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
 
 }
 
+useEffect(() => {
+
+  if (!campFromURL) return
+
+  fetchLeads({
+    IdCamp: campFromURL,
+    FechaIngreso: new Date().toISOString().slice(0,10),
+    inicampania: null
+  })
+
+}, [campFromURL])
 
   const filteredLeads = useMemo(() => {
 
@@ -143,7 +161,7 @@ const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
       {/* LOADER GLOBAL DE BUSQUEDA */}
       <Loader show={loading} />
 
-      <Header username={user?.usuario} />
+      {user && <Header username={user.usuario} />}
 
 
       {toast && (
@@ -162,11 +180,13 @@ const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
 
       <div className="px-6 py-4 space-y-4 w-full">
 
-        <LeadFilters
-          onSearch={fetchLeads}
-          columns={columns}
-          setColumns={setColumns}
-        />
+       {!isEmbed && (
+  <LeadFilters
+    onSearch={fetchLeads}
+    columns={columns}
+    setColumns={setColumns}
+  />
+)}
 
 
         <LeadTable

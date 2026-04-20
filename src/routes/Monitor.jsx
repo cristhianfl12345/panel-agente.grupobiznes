@@ -1,16 +1,22 @@
 import Leads from '../pages/Leads'
 import { useAuth } from '../context/AuthContext'
 import { useLocalTheme } from '../context/useLocalTheme'
+import { useSearchParams } from 'react-router-dom'
 
 export default function Monitor() {
 
   const { user } = useAuth()
   const { theme } = useLocalTheme()
+  const [searchParams] = useSearchParams()
+
+  const embedKey = searchParams.get("embedKey")
+  const isEmbed = !!embedKey
 
   const isDark = theme === 'dark'
   const id_plataforma = parseInt(localStorage.getItem('id_plataforma'))
 
-  if (!user) {
+  // 🟢 PERMITIR EMBED SIN USER
+  if (!user && !isEmbed) {
     return (
       <div
         className={`min-h-screen flex items-center justify-center transition-colors ${
@@ -24,7 +30,8 @@ export default function Monitor() {
     )
   }
 
-  if (![2, 3, 4].includes(id_plataforma)) {
+  // 🟢 SALTAR VALIDACIÓN DE PLATAFORMA EN EMBED
+  if (!isEmbed && ![2, 3, 4].includes(id_plataforma)) {
     return (
       <div
         className={`min-h-screen flex items-center justify-center transition-colors ${
@@ -38,5 +45,5 @@ export default function Monitor() {
     )
   }
 
-  return <Leads user={user} />
+  return <Leads />
 }

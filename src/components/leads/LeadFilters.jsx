@@ -27,26 +27,29 @@ function LeadFilters({ onSearch, columns, setColumns }) {
   const [showColumnPanel, setShowColumnPanel] = useState(false)
 
   // cargar campaña y subcampañas
-  useEffect(() => {
+useEffect(() => {
 
-    const storedCamp = localStorage.getItem('id_campana')
+  const params = new URLSearchParams(window.location.search)
+  const campFromURL = params.get("camp")
 
-    if (!storedCamp) return
+  const finalCamp = campFromURL || localStorage.getItem('id_campana')
 
-    const parsedCamp = parseInt(storedCamp)
-    setIdCamp(parsedCamp)
+  if (!finalCamp) return
 
-    getSubcampanias(parsedCamp)
-      .then(data => {
-        setSubcampanias(data || [])
-        setIniCampania('')
-      })
-      .catch(err => {
-        console.error('Error cargando subcampañas:', err)
-        setSubcampanias([])
-      })
+  const parsedCamp = parseInt(finalCamp)
+  setIdCamp(parsedCamp)
 
-  }, [])
+  getSubcampanias(parsedCamp)
+    .then(data => {
+      setSubcampanias(data || [])
+      setIniCampania('')
+    })
+    .catch(err => {
+      console.error('Error cargando subcampañas:', err)
+      setSubcampanias([])
+    })
+
+}, [])
 
   const handleSubmit = (e) => {
     e.preventDefault()

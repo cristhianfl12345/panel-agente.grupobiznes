@@ -160,14 +160,25 @@ function AppRoutes() {
 
             {/* REDIRECCIÓN */}
             <Route
-              path="*"
-              element={
-                <Navigate
-                  to={isAuth ? "/home" : "/login"}
-                  replace
-                />
-              }
-            />
+  path="*"
+  element={
+    (() => {
+      const params = new URLSearchParams(window.location.search)
+      const embedKey = params.get("embedKey")
+
+      if (embedKey) {
+        return <Navigate to="/monitor" replace />
+      }
+
+      return (
+        <Navigate
+          to={isAuth ? "/home" : "/login"}
+          replace
+        />
+      )
+    })()
+  }
+/>
 
           </Routes>
 
