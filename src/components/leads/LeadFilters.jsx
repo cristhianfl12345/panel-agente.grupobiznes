@@ -32,7 +32,7 @@ useEffect(() => {
   const params = new URLSearchParams(window.location.search)
   const campFromURL = params.get("camp")
 
-  const finalCamp = campFromURL || localStorage.getItem('id_campana')
+  const finalCamp = campFromURL || localStorage.getItem('id_camp')
 
   if (!finalCamp) return
 

@@ -52,13 +52,13 @@ function Home() {
     localStorage.removeItem('plataforma')
     localStorage.removeItem('id_plataforma')
     localStorage.removeItem('plataforma_codigo')
-    localStorage.removeItem('id_campana')
+    localStorage.removeItem('id_camp')
     localStorage.removeItem('nombre_campana')
     navigate('/login')
   }
 
   const handleSelectCampana = (campana) => {
-    localStorage.setItem('id_campana', campana.id_campana)
+    localStorage.setItem('id_camp', campana.id_camp)
     localStorage.setItem('nombre_campana', campana.nombre)
     localStorage.setItem('campanaSeleccionada', JSON.stringify(campana))
     localStorage.setItem('nombreCampana', campana.nombre)
@@ -285,7 +285,7 @@ function Home() {
 
               {campanasMonitor.map((campana) => (
                 <motion.div
-                  key={campana.id_campana}
+                  key={campana.id_camp}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => handleSelectCampana(campana)}
