@@ -7,12 +7,12 @@ export default function ProtectedRoute({ children }) {
   const params = new URLSearchParams(window.location.search)
   const embedKey = params.get("embedKey")
 
-  // 🟢 PERMITIR ACCESO SI ES EMBED
+  // PERMITIR ACCESO SI ES EMBED
   if (embedKey) {
     return children
   }
 
-  // 🔴 FLUJO NORMAL
+  // FLUJO NORMAL
   if (!isAuth) {
     return <Navigate to="/login" replace />
   }
