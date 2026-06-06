@@ -12,7 +12,7 @@ import PlatformRoute from './components/PlatformRoute'
 
 import Reniec from './pages/Reniec'
 import Monitor from './routes/Monitor'
-import Carterizacion from './routes/Carterizacion'
+import Cartera from './routes/Cartera'
 
 import { KeepAliveProvider } from './context/KeepAliveContext'
 
@@ -151,7 +151,7 @@ function AppRoutes() {
                 <ProtectedRoute>
                   <KeepAliveProvider>
                     <PlatformRoute feature="cartera">
-                      <Carterizacion />
+                      <Cartera />
                     </PlatformRoute>
                   </KeepAliveProvider>
                 </ProtectedRoute>

@@ -29,7 +29,9 @@ export default function Header() {
 
   useEffect(() => {
 
-    const campana = localStorage.getItem('nombreCampana')
+const campana = JSON.parse(
+  localStorage.getItem('campanaSeleccionada') || '{}'
+).nombre
 
     if (campana) {
       setNombreCampana(campana)

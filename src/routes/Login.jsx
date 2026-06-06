@@ -33,7 +33,11 @@ function Login() {
     setLoading(true)
 
     try {
-      const res = await fetch('http://192.168.9.115:3001/api/auth/login', {
+        const res = await fetch('http://192.168.9.115:3001/api/auth/login', 
+   //   const res = await fetch('https://agente.bizapp.pe/api/auth/login', 
+    //  const res = await fetch( `${import.meta.env.VITE_API_URL}/api/auth/login`,
+
+        {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -43,6 +47,7 @@ function Login() {
       })
 
       const data = await res.json()
+      localStorage.setItem('token', data.token)
 
       if (!res.ok) {
         setError(data.message || 'Error al iniciar sesión')
@@ -59,13 +64,13 @@ function Login() {
         hora_out: data.hora_out.slice(0, 5)
       })
 
-      localStorage.setItem('id_usuario', data.id_usuario)
+      //localStorage.setItem('id_usuario', data.id_usuario)
       localStorage.setItem('auth', 'true')
-      localStorage.setItem('nombre', data.nombre)
-      localStorage.setItem('plataforma', data.plataforma_codigo)
-      localStorage.setItem('id_plataforma', data.id_plataforma)
-      localStorage.setItem('hora_in', data.hora_in.slice(0, 5))
-      localStorage.setItem('hora_out', data.hora_out.slice(0, 5))
+      //localStorage.setItem('nombre', data.nombre)
+     // localStorage.setItem('plataforma', data.plataforma_codigo)
+     // localStorage.setItem('id_plataforma', data.id_plataforma)
+      //localStorage.setItem('hora_in', data.hora_in.slice(0, 5))
+      //localStorage.setItem('hora_out', data.hora_out.slice(0, 5))
 
       navigate('/home')
 

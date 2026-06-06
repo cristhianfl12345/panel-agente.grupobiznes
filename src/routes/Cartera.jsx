@@ -1,9 +1,9 @@
-import Leads from '../pages/Leads'
+import Carterizacion from '../pages/Carterizacion'
 import { useAuth } from '../context/AuthContext'
 import { useLocalTheme } from '../context/useLocalTheme'
 import { useSearchParams } from 'react-router-dom'
 
-export default function Monitor() {
+export default function Cartera() {
 
   const { user } = useAuth()
   const { theme } = useLocalTheme()
@@ -16,7 +16,7 @@ export default function Monitor() {
 
 const id_plataforma = parseInt(user?.id_plataforma || 0);
 
-  // 🟢 PERMITIR EMBED SIN USER
+  //  PERMITIR EMBED SIN USER
   if (!user && !isEmbed) {
     return (
       <div
@@ -31,7 +31,7 @@ const id_plataforma = parseInt(user?.id_plataforma || 0);
     )
   }
 
-  // 🟢 SALTAR VALIDACIÓN DE PLATAFORMA EN EMBED
+  //  SALTAR VALIDACIÓN DE PLATAFORMA EN EMBED
   if (!isEmbed && ![2, 3, 4].includes(id_plataforma)) {
     return (
       <div
@@ -46,5 +46,5 @@ const id_plataforma = parseInt(user?.id_plataforma || 0);
     )
   }
 
-  return <Leads />
+  return <Carterizacion />
 }

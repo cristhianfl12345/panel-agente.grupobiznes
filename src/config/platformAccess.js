@@ -16,14 +16,17 @@ export const PLATFORM_ACCESS = {
   },
   busqueda_monitor_cartera: {
     busqueda: true,
-    monitor: true,
+    monitor: false,
     cartera: true,
   },
 }
 
 export function canAccess(feature) {
-  const plataforma = localStorage.getItem('plataforma')
-  if (!plataforma) return false
+ const plataforma = JSON.parse(
+  localStorage.getItem("user") || "{}"
+)?.plataforma
+
+if (!plataforma) return false
 
   return PLATFORM_ACCESS[plataforma]?.[feature] === true
 }

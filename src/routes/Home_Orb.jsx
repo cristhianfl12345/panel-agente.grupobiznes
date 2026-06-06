@@ -12,11 +12,9 @@ function Home() {
   const { secondsLeft } = useKeepAlive()
   const { theme, toggleTheme } = useLocalTheme()
   const [nombre, setNombre] = useState('')
-  const [typedNombre, setTypedNombre] = useState('')
-const [cursorVisible, setCursorVisible] = useState(true)
   const [campanasMonitor, setCampanasMonitor] = useState([])
   const [openMonitor, setOpenMonitor] = useState(false)
-const [openCartera, setOpenCartera] = useState(false)
+
   const navigate = useNavigate()
 
   const minutes = Math.floor(secondsLeft / 60)
@@ -27,7 +25,6 @@ const [openCartera, setOpenCartera] = useState(false)
   useEffect(() => {
     const isAuth = localStorage.getItem('auth')
 const user = JSON.parse(localStorage.getItem('user') || '{}')
-const token = localStorage.getItem('token')
 
 const storedNombre = user?.nombre
 const idUsuario = user?.id_usuario
@@ -40,50 +37,19 @@ const idUsuario = user?.id_usuario
     setNombre(storedNombre)
 
     if (idUsuario) {
-       fetch(
-  `http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`
+    //   fetch(`http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`)
+   fetch(`https://agente.bizapp.pe/api/auth/campanas-monitor/${idUsuario}`)
+    //  fetch(`${import.meta.env.VITE_API_URL}/api/auth/campanas-monitor/${idUsuario}`)
+        .then(res => res.json())
+        .then(data => {
+          setCampanasMonitor(data.data || data)
+        })
+        .catch(err => {
+          console.error('Error cargando campañas monitor:', err)
+        })
     }
-  }
-)
-  .then(res => res.json())
-  .then(data => {
-    setCampanasMonitor(data.data || data)
-  })
-  .catch(err => {
-    console.error('Error cargando campañas monitor:', err)
-  })
-}}, [navigate])
-// text style
-useEffect(() => {
-  if (!nombre) return
 
-  setTypedNombre('')
-
-  let index = 0
-
-  const interval = setInterval(() => {
-    setTypedNombre(nombre.slice(0, index + 1))
-    index++
-
-    if (index >= nombre.length) {
-      clearInterval(interval)
-    }
-  }, 90)
-
-  return () => clearInterval(interval)
-}, [nombre])
-
-useEffect(() => {
-  const interval = setInterval(() => {
-    setCursorVisible(prev => !prev)
-  }, 500)
-
-  return () => clearInterval(interval)
-}, [])
-
+  }, [navigate])
 
   const handleLogout = () => {
     localStorage.removeItem('auth')
@@ -93,57 +59,36 @@ useEffect(() => {
     localStorage.removeItem('plataforma_codigo')
     localStorage.removeItem('id_camp')
     localStorage.removeItem('nombre_campana')
-    localStorage.removeItem('user')
-    localStorage.removeItem('id_usuario')
-    localStorage.removeItem('hora_out')
-    localStorage.removeItem('hora_in')
     navigate('/login')
   }
 
   const handleSelectCampana = (campana) => {
-   // localStorage.setItem('id_camp', campana.id_camp)
-  //  localStorage.setItem('nombre_campana', campana.nombre)
+    localStorage.setItem('id_camp', campana.id_camp)
+    localStorage.setItem('nombre_campana', campana.nombre)
     localStorage.setItem('campanaSeleccionada', JSON.stringify(campana))
-  //  localStorage.setItem('nombreCampana', campana.nombre)
+    localStorage.setItem('nombreCampana', campana.nombre)
     navigate('/monitor')
   }
-const handleSelectCartera = (campana) => {
-  const user = JSON.parse(localStorage.getItem('user') || '{}')
 
- // localStorage.setItem('id_camp', campana.id_camp)
-  // localStorage.setItem('nombre_campana', campana.nombre)
-  localStorage.setItem('campanaSeleccionada', JSON.stringify(campana))
-
-  // datos del usuario
- // localStorage.setItem('id_usuario', user.id_usuario)
- // localStorage.setItem('id_plataforma', user.id_plataforma)
-
-  navigate('/cartera')
-
-  
-}
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.35 }}
-      className={`
-  relative min-h-screen flex flex-col overflow-hidden transition-colors
-  ${isDark ? 'bg-[#1F2029] text-white' : 'bg-[#F5F5F5] text-slate-800'}
-`}
-    >
-     {isDark && (
-  <div className="absolute inset-0 z-0 flex items-center justify-center">
-    <div className="w-[70vw] h-[70vh]">
-      <Orb
-        hoverIntensity={1.5}
-        rotateOnHover
-        hue={220}
-        backgroundColor="#1F2029"
-      />
-    </div>
-  </div>
-)}
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ duration: 0.35 }}
+  className={`
+    relative min-h-screen flex flex-col overflow-hidden
+    ${isDark ? 'text-white' : 'text-slate-800'}
+  `}
+>
+  {/* Fondo Orb */}
+<div className="absolute inset-0 z-0">
+  <Orb
+    hoverIntensity={1.5}
+    rotateOnHover
+    hue={isDark ? 210 : 0}
+    backgroundColor={isDark ? "#1F2029" : "#F5F5F5"}
+  />
+</div>
       {/* HEADER */}
       <motion.header
   style={{ position: 'relative', zIndex: 10 }}
@@ -231,40 +176,19 @@ const handleSelectCartera = (campana) => {
           className="text-center space-y-5"
         >
           <h1 className="text-3xl font-bold flex items-center justify-center gap-2">
-  <span>Bienvenido</span>
+            Bienvenido{' '}
+            <span className={isDark ? 'text-blue-400' : 'text-[#2C4361]'}>
+              {nombre}
+            </span>
 
-  <span
-    className={`
-      min-w-[180px]
-      text-left
-      ${isDark ? 'text-blue-400' : 'text-[#2C4361]'}
-    `}
-  >
-    {typedNombre}
-
-    <span
-      className={`
-        inline-block ml-1
-        transition-opacity duration-150
-        ${cursorVisible ? 'opacity-100' : 'opacity-0'}
-      `}
-    >
-      |
-    </span>
-  </span>
-
-  <motion.span
-    animate={{ rotate: [0, 20, -10, 20, 0] }}
-    transition={{
-      duration: 1.2,
-      repeat: Infinity,
-      ease: 'easeInOut'
-    }}
-    className="inline-block"
-  >
-    👋
-  </motion.span>
-</h1>
+            <motion.span
+              animate={{ rotate: [0, 20, -10, 20, 0] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+              className="inline-block"
+            >
+              👋
+            </motion.span>
+          </h1>
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -340,7 +264,7 @@ const handleSelectCartera = (campana) => {
           }
         `}
       >
-        <span className="flex items-center justify-center gap-2 font-semibold">
+        <span className="flex items-center gap-2 font-semibold">
           <FiBriefcase size={20} />
           Monitor Leads
         </span>
@@ -400,85 +324,29 @@ const handleSelectCartera = (campana) => {
   )}
 
   {/* CARTERIZACIÓN */}
-    {canAccess('cartera') && (
-    <motion.div
+  {canAccess('cartera') && (
+    <motion.button
       variants={{
         hidden: { opacity: 0, y: 20 },
         show: { opacity: 1, y: 0 }
       }}
-      className="w-full sm:w-[300px] relative"
+      whileHover={{ scale: 1.05, y: -2 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => navigate('/cartera')}
+      className={`
+        w-full sm:w-[300px]
+        flex items-center justify-center gap-2
+        px-6 py-4 rounded-xl shadow-md
+        transition cursor-pointer
+        ${isDark
+          ? 'bg-[#DE546C] text-black hover:brightness-95'
+          : 'bg-[#732230] text-white hover:brightness-110'
+        }
+      `}
     >
-      <motion.button
-        whileHover={{ scale: 1.05, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setOpenCartera(!openCartera)}
-        className={`
-          w-full flex items-center justify-between
-          px-6 py-4 rounded-xl shadow-md
-          transition cursor-pointer
-          ${isDark
-            ? 'bg-[#74F2F2] text-black hover:brightness-95'
-            : 'bg-[#354196] text-white hover:brightness-110'
-          }
-        `}
-      >
-        <span className="flex items-center justify-center gap-2 font-semibold">
-          <FiBriefcase size={20} />
-          Carterizacion
-        </span>
-
-        <motion.span
-          animate={{ rotate: openCartera ? 180 : 0 }}
-          transition={{ duration: 0.25 }}
-        >
-          {openCartera ? <FiChevronUp /> : <FiChevronDown />}
-        </motion.span>
-      </motion.button>
-
-      <AnimatePresence>
-        {openCartera && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.97 }}
-            transition={{ duration: 0.2 }}
-            className={`
-              absolute left-0 w-full mt-2
-              rounded-xl shadow-lg z-50
-              max-h-60 overflow-y-auto
-              ${isDark ? 'bg-slate-800' : 'bg-white'}
-            `}
-          >
-            <div className="p-3 space-y-2">
-              {campanasMonitor.length === 0 && (
-                <p className="text-sm text-gray-400 text-center">
-                  No hay campañas asignadas
-                </p>
-              )}
-
-              {campanasMonitor.map((campana) => (
-                <motion.div
-                  key={campana.id_camp}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => handleSelectCartera(campana)}
-                  className={`
-                    cursor-pointer px-4 py-2 rounded-lg text-sm text-center
-                    ${isDark
-                      ? 'bg-slate-700 hover:bg-slate-600'
-                      : 'bg-slate-100 hover:bg-slate-200'
-                    }
-                    transition
-                  `}
-                >
-                  {campana.nombre}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      <FiUser size={20} />
+      Carterización
+    </motion.button>
   )}
 
 </motion.div>
@@ -490,7 +358,7 @@ const handleSelectCartera = (campana) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
-         className={`
+        className={`
     relative z-10
     text-center py-4 text-sm
     ${isDark ? 'text-slate-400' : 'text-slate-500'}

@@ -5,20 +5,33 @@ const KeepAliveContext = createContext()
 
 export function KeepAliveProvider({ children }) {
   const navigate = useNavigate()
+
   const [secondsLeft, setSecondsLeft] = useState(300)
+
   const timerRef = useRef(null)
   const pingRef = useRef(null)
+  const logoutExecuted = useRef(false)
 
-  const getUserId = () => localStorage.getItem('id_usuario')
-
+  const getUserId = () =>
+    JSON.parse(localStorage.getItem('user') || '{}')?.id_usuario
 
   const resetTimer = () => {
-    setSecondsLeft(300)
+    if (!logoutExecuted.current) {
+      setSecondsLeft(300)
+    }
   }
 
   const logout = () => {
+    if (logoutExecuted.current) return
+
+    logoutExecuted.current = true
+
+    clearInterval(timerRef.current)
+    clearInterval(pingRef.current)
+
     localStorage.clear()
-    navigate('/login')
+
+    navigate('/login', { replace: true })
   }
 
   // contador visual
@@ -26,9 +39,9 @@ export function KeepAliveProvider({ children }) {
     timerRef.current = setInterval(() => {
       setSecondsLeft(prev => {
         if (prev <= 1) {
-          logout()
           return 0
         }
+
         return prev - 1
       })
     }, 1000)
@@ -36,47 +49,63 @@ export function KeepAliveProvider({ children }) {
     return () => clearInterval(timerRef.current)
   }, [])
 
+  // cerrar sesión cuando llegue a 0
+  useEffect(() => {
+    if (secondsLeft === 0) {
+      logout()
+    }
+  }, [secondsLeft])
+
   // ping backend
   useEffect(() => {
-  pingRef.current = setInterval(async () => {
-    const id_usuario = localStorage.getItem('id_usuario')
-    if (!id_usuario) return
+    pingRef.current = setInterval(async () => {
+      const id_usuario = getUserId()
 
-    try {
-      const res = await fetch(
-        'http://192.168.9.115:3001/api/auth/keepalive',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id_usuario }),
+      if (!id_usuario) return
+
+      try {
+        const token = localStorage.getItem('token')
+        const res = await fetch(
+          'http://192.168.9.115:3001/api/auth/keepalive',
+          {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id_usuario }),
+          }
+        )
+          
+
+        if (res.status === 401 || res.status === 440) {
+          logout()
         }
-      )
-
-      if (res.status === 401 || res.status === 440) {
-        logout()
+      } catch (error) {
+        console.error('Error keepalive:', error)
       }
-    } catch {
-      // no cerrar sesión por errores de red
-    }
-  }, 30000)
+    }, 30000)
 
-  return () => clearInterval(pingRef.current)
-}, [])
+    return () => clearInterval(pingRef.current)
+  }, [])
 
   // detectar actividad
   useEffect(() => {
     const events = ['click', 'mousemove', 'keydown']
 
-    const activity = () => resetTimer()
+    const activity = () => {
+      resetTimer()
+    }
 
-    events.forEach(e =>
-      window.addEventListener(e, activity)
+    events.forEach(event =>
+      window.addEventListener(event, activity)
     )
 
-    return () =>
-      events.forEach(e =>
-        window.removeEventListener(e, activity)
+    return () => {
+      events.forEach(event =>
+        window.removeEventListener(event, activity)
       )
+    }
   }, [])
 
   return (

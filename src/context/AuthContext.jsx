@@ -6,7 +6,7 @@ export const AuthProvider = ({ children }) => {
 
   const [user, setUser] = useState(null)
 
-  // 🔁 Restaurar sesión al recargar
+  // Restaurar sesión al recargar
   useEffect(() => {
     const storedUser = localStorage.getItem('user')
     if (storedUser) {
@@ -14,13 +14,13 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
-  // 🔐 Login
+  // Login
   const login = (userData) => {
     setUser(userData)
     localStorage.setItem('user', JSON.stringify(userData))
   }
 
-  // 🚪 Logout
+  // Logout
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')

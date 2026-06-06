@@ -38,7 +38,7 @@ const getAuthConfig = () => {
 export const getLeads = async (fecha, idCamp, iniCampania) => {
 
   const { headers, paramsExtra } = getAuthConfig()
-
+const token = localStorage.getItem('token')
   const res = await axios.get(`${API}/leads`, {
     params: {
       idCamp: Number(idCamp),
@@ -46,7 +46,10 @@ export const getLeads = async (fecha, idCamp, iniCampania) => {
       fechaIngreso: fecha,
       ...paramsExtra
     },
-    headers
+    headers: {
+      ...headers,
+      Authorization: `Bearer ${token}`
+    }
   })
 
   return res.data
@@ -58,6 +61,7 @@ export const getSubcampanias = async (idCamp) => {
 
   const { headers, paramsExtra } = getAuthConfig()
 const token = localStorage.getItem('token')
+
   const res = await axios.get(
     `${API}/leads/subcampanias/${idCamp}`,
     {
@@ -75,7 +79,7 @@ const token = localStorage.getItem('token')
 }
 
 
-// ✅ GET VISTAS POR CAMPAÑA
+//  GET VISTAS POR CAMPAÑA
 export const getVistasCampana = async (idCamp) => {
 
   const { headers, paramsExtra } = getAuthConfig()
