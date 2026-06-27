@@ -15,6 +15,7 @@ function Home() {
   const [typedNombre, setTypedNombre] = useState('')
 const [cursorVisible, setCursorVisible] = useState(true)
   const [campanasMonitor, setCampanasMonitor] = useState([])
+  const [campanasCartera, setCampanasCartera] = useState([])
   const [openMonitor, setOpenMonitor] = useState(false)
 const [openCartera, setOpenCartera] = useState(false)
   const navigate = useNavigate()
@@ -39,22 +40,42 @@ const idUsuario = user?.id_usuario
 
     setNombre(storedNombre)
 
-    if (idUsuario) {
-       fetch(
-  `http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`,
-  {
-    headers: {
-      Authorization: `Bearer ${token}`
+if (idUsuario) {
+
+  // Monitor
+  fetch(
+    `http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
     }
-  }
-)
-  .then(res => res.json())
-  .then(data => {
-    setCampanasMonitor(data.data || data)
-  })
-  .catch(err => {
-    console.error('Error cargando campañas monitor:', err)
-  })
+  )
+    .then(res => res.json())
+    .then(data => {
+      setCampanasMonitor(data.data || data)
+    })
+    .catch(err => {
+      console.error('Error cargando campañas monitor:', err)
+    })
+
+  // Carterización
+  fetch(
+    `http://192.168.9.115:3001/api/auth/campanas-carterizacion/${idUsuario}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    }
+  )
+    .then(res => res.json())
+    .then(data => {
+      setCampanasCartera(data.data || data)
+    })
+    .catch(err => {
+      console.error('Error cargando campañas carterización:', err)
+    })
+
 }}, [navigate])
 // text style
 useEffect(() => {
@@ -450,13 +471,13 @@ const handleSelectCartera = (campana) => {
             `}
           >
             <div className="p-3 space-y-2">
-              {campanasMonitor.length === 0 && (
+              {campanasCartera.length === 0 && (
                 <p className="text-sm text-gray-400 text-center">
                   No hay campañas asignadas
                 </p>
               )}
 
-              {campanasMonitor.map((campana) => (
+              {campanasCartera.map((campana) => (
                 <motion.div
                   key={campana.id_camp}
                   whileHover={{ scale: 1.03 }}
@@ -496,7 +517,7 @@ const handleSelectCartera = (campana) => {
     ${isDark ? 'text-slate-400' : 'text-slate-500'}
   `}
       >
-        © Panel de administración
+        © Panel - Agente
       </motion.footer>
     </motion.div>
   )

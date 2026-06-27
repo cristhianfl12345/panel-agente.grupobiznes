@@ -6,7 +6,7 @@ const KeepAliveContext = createContext()
 export function KeepAliveProvider({ children }) {
   const navigate = useNavigate()
 
-  const [secondsLeft, setSecondsLeft] = useState(300)
+  const [secondsLeft, setSecondsLeft] = useState(900)
 
   const timerRef = useRef(null)
   const pingRef = useRef(null)
@@ -17,7 +17,7 @@ export function KeepAliveProvider({ children }) {
 
   const resetTimer = () => {
     if (!logoutExecuted.current) {
-      setSecondsLeft(300)
+      setSecondsLeft(900)
     }
   }
 

@@ -38,7 +38,7 @@ const idUsuario = user?.id_usuario
 
     if (idUsuario) {
     //   fetch(`http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`)
-   fetch(`https://agente.bizapp.pe/api/auth/campanas-monitor/${idUsuario}`)
+   fetch(`http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`)
     //  fetch(`${import.meta.env.VITE_API_URL}/api/auth/campanas-monitor/${idUsuario}`)
         .then(res => res.json())
         .then(data => {

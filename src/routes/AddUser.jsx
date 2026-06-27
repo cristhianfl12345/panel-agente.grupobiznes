@@ -49,7 +49,7 @@ function AddUser() {
     }
 
     try {
-     //const res = await fetch('https://agente.bizapp.pe/api/add-user',
+     //const res = await fetch('http://192.168.9.115:3001/api/add-user',
      const res = await fetch('http://192.168.9.115:3001/api/add-user', 
      // const res = await fetch( `${import.meta.env.VITE_API_URL}/api/add-user`,
         {

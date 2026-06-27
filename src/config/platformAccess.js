@@ -16,7 +16,7 @@ export const PLATFORM_ACCESS = {
   },
   busqueda_monitor_cartera: {
     busqueda: true,
-    monitor: false,
+    monitor: true,
     cartera: true,
   },
 }

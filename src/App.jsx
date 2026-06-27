@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from "framer-motion"
-
+import { useRef } from "react";
 import Login from './routes/Login'
 import AddUser from './routes/AddUser'
 import Home from './routes/Home'
@@ -18,6 +18,7 @@ import { KeepAliveProvider } from './context/KeepAliveContext'
 
 import Loader from './pages/Loader'
 import Header from './routes/header.jsx'
+import NotificacionSocket from "./components/notificaciones/NotificacionSocket";
 
 
 const pageVariants = {
@@ -47,11 +48,12 @@ const pageVariants = {
 }
 
 
+
 function AppRoutes() {
 
   const location = useLocation()
   const [loadingRoute, setLoadingRoute] = useState(false)
-
+ const [noti, setNoti] = useState(null)
   const isAuth = localStorage.getItem('auth')
 
   useEffect(() => {
@@ -67,8 +69,108 @@ function AppRoutes() {
   }, [location.pathname])
 
 
-  return (
-    <>
+
+const audioRef = useRef(new Audio("/notificacion_sound.mp3"));
+
+const handleNotificacion = (data) => {
+  console.log("🔔 Notificación global:", data);
+
+  // 🔊 Reproducir sonido
+  audioRef.current.currentTime = 0;
+  audioRef.current.play().catch((err) => {
+    console.error("No se pudo reproducir el audio:", err);
+  });
+
+  setNoti(data);
+
+  setTimeout(() => {
+    setNoti(null);
+  }, 4000);
+};
+
+return (
+  <>
+    <NotificacionSocket
+      onNotificacion={handleNotificacion}
+    />
+
+    {/* 🔔 POPUP NOTIFICACIÓN ANIMADA */}
+    <AnimatePresence>
+      {noti && (
+        <motion.div
+          initial={{
+            scale: 0,
+            opacity: 0,
+            y: -50
+          }}
+          animate={{
+            scale: 1,
+            opacity: 1,
+            y: 0
+          }}
+          exit={{
+            scale: 0,
+            opacity: 0,
+            y: -50
+          }}
+          transition={{
+            type: "spring",
+            stiffness: 260,
+            damping: 18
+          }}
+          style={{
+            position: "fixed",
+            top: 20,
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 9999
+          }}
+        >
+          {/* círculo contenedor */}
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              background: "#fd8769",
+              color: "black",
+              padding: "14px 18px",
+              borderRadius: "999px",
+              minWidth: 320,
+              boxShadow: "0 15px 40px rgba(0,0,0,0.4)",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 4
+            }}
+          >
+            <div style={{ fontWeight: 700 }}>
+              Lead asignado
+            </div>
+
+            <div
+              style={{
+                fontSize: 13,
+                opacity: 0.9,
+                textAlign: "center"
+              }}
+            >
+              {noti.mensaje}
+            </div>
+
+            <div style={{ fontSize: 12, opacity: 0.7 }}>
+              Campaña: {noti.leads?.[0]?.id_camp}
+            </div>
+
+            <div style={{ fontSize: 11, opacity: 0.6 }}>
+              {new Date(noti.fecha).toLocaleTimeString()}
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+
       {/* LOADER GLOBAL */}
       <Loader show={loadingRoute} />
 

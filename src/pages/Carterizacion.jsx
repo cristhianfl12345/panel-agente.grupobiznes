@@ -3,8 +3,8 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useState, useMemo } from 'react'
 import { getLeads, getVistasCampana } from '../services/carterizacion.service'
-import LeadFilters from '../components/carterizacion/LeadFilters'
-import LeadTable from '../components/carterizacion/LeadTable'
+import LeadFilters from '../components/carterizacion/CarterizacionFilters'
+import LeadTable from '../components/carterizacion/CarterizacionTable'
 import { useLocalTheme } from '../context/useLocalTheme'
 import { useAuth } from '../context/AuthContext'
 import Header from '../routes/header.jsx'
@@ -30,6 +30,14 @@ const isEmbed = !!embedKey
 
   const [searchText, setSearchText] = useState('')
   const [toast, setToast] = useState(null)
+
+  const [columnFilters, setColumnFilters] = useState({
+  fecha_creaciondia: '',
+  mejornivel2: '',
+  ultnivel2: '',
+  diasSinLlamar: '',
+  gestiones: ''
+})
 
 
 if (!user && !isEmbed) {
@@ -63,22 +71,18 @@ if (!user && !isEmbed) {
 
 
 const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
-
+{/*
   if (!FechaIngreso || !IdCamp) {
     alert('Debe seleccionar fecha')
     return
   }
-
+ */}
   setLoading(true)
   setSearched(true)
 
   try {
 
-    const response = await getLeads(
-      FechaIngreso,
-      IdCamp,
-      inicampania
-    )
+    const response = await getLeads(inicampania)
 
     const rows = response?.data || []
 
@@ -132,22 +136,71 @@ useEffect(() => {
 
 }, [campFromURL])
 
-  const filteredLeads = useMemo(() => {
+const calcularDiasSinLlamar = (fecha) => {
 
-    if (!searchText) return leads
+  if (!fecha) return 9999
 
+  const hoy = new Date()
+  const ultima = new Date(fecha)
+
+  return Math.floor(
+    (hoy - ultima) / (1000 * 60 * 60 * 24)
+  )
+}
+
+const filteredLeads = useMemo(() => {
+
+  let result = [...leads]
+
+  if (columnFilters.fecha_creaciondia) {
+    result = result.filter(
+      x =>
+        String(x.fecha_creaciondia).slice(0,10) ===
+        columnFilters.fecha_creaciondia
+    )
+  }
+
+  if (columnFilters.mejornivel2) {
+    result = result.filter(
+      x => x.mejornivel2 === columnFilters.mejornivel2
+    )
+  }
+
+  if (columnFilters.ultnivel2) {
+    result = result.filter(
+      x => x.ultnivel2 === columnFilters.ultnivel2
+    )
+  }
+
+if (columnFilters.diasSinLlamar !== '') {
+  result = result.filter(
+    x =>
+      calcularDiasSinLlamar(x.ult_fecha) ===
+      Number(columnFilters.diasSinLlamar)
+  )
+}
+if (columnFilters.gestiones !== '') {
+  result = result.filter(
+    x =>
+      String(x.gestiones ?? 0) ===
+      String(columnFilters.gestiones)
+  )
+}
+
+  if (searchText) {
     const text = searchText.toLowerCase()
 
-    return leads.filter((lead) => (
-
+    result = result.filter(lead =>
       Object.values(lead)
         .join(" ")
         .toLowerCase()
         .includes(text)
+    )
+  }
 
-    ))
+  return result
 
-  }, [leads, searchText])
+}, [leads, searchText, columnFilters])
 
 
   return (
@@ -185,6 +238,9 @@ useEffect(() => {
     onSearch={fetchLeads}
     columns={columns}
     setColumns={setColumns}
+    columnFilters={columnFilters}
+    setColumnFilters={setColumnFilters}
+    leads={leads}
   />
 )}
 

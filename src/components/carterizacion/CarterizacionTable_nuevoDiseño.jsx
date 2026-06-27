@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from 'react'
-import LeadRow from './LeadRow'
+import LeadRow from './CarterizacionRow'
 import { useLocalTheme } from '../../context/useLocalTheme'
 import { motion, AnimatePresence } from "motion/react"
 import { ArrowRightLeft } from "lucide-react"
@@ -32,10 +32,10 @@ export default function LeadTable({
 const handleDrop = (targetKey) => {
   if (!draggedKey) return
 
-  // ❌ No permitir mover index
+  // No permitir mover index
   if (draggedKey === "index") return
 
-  // ❌ No permitir que nada se coloque antes de index
+  // No permitir que nada se coloque antes de index
   if (targetKey === "index") return
 
   const newColumns = [...columns]
@@ -98,76 +98,108 @@ const handleDrop = (targetKey) => {
         `}>
 
           {/* HEADER */}
-          <thead className={`
-            sticky top-0 z-20
-            backdrop-blur
-            ${isDark ? 'bg-slate-800/95' : 'bg-gray-100/95'}
-          `}>
-
-            <tr>
-
-              <AnimatePresence initial={false}>
-
-                {visibleColumns.map((col, i) => {
-
-                  const key = getKey(col)
-                  const label = getLabel(col)
-
-                  return (
-
-                    <th
-                      key={key}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={() => handleDrop(key)}
-                      className={`
-                        border
-                        px-3 py-2
-                        text-left
-                        whitespace-nowrap
-                        transition-colors
-                        ${isDark ? 'border-slate-700' : 'border-slate-300'}
-                        ${i === 0 ? "rounded-tl-xl" : ""}
-                        ${i === visibleColumns.length - 1 ? "rounded-tr-xl" : ""}
-                      `}
-                    >
-
-                      <motion.div
-  draggable={key !== "index"}
-  onDragStart={() => key !== "index" && handleDragStart(key)}
-  whileHover={key !== "index" ? { scale: 1.05 } : {}}
-  whileTap={key !== "index" ? { scale: 0.95 } : {}}
-  className={`flex items-center gap-2 select-none ${
-    key === "index" ? "" : "cursor-move group"
-  }`}
+          <thead
+  className="
+    sticky top-0 z-20
+    bg-red-200
+    text-red-950
+    shadow-md
+  "
 >
+  <tr>
 
-                       {key !== "index" && (
-  <motion.div
-    whileHover={{ rotate: 90, scale: 1.2 }}
-    transition={{ type: "spring", stiffness: 300 }}
-    className="text-slate-400 group-hover:text-blue-500"
-  >
-    <ArrowRightLeft size={14}/>
-  </motion.div>
-)}
+    <AnimatePresence initial={false}>
 
-                        <span className="font-medium whitespace-nowrap">
-                          {label}
-                        </span>
+      {visibleColumns.map((col, i) => {
 
-                      </motion.div>
+        const key = getKey(col)
+        const label = getLabel(col)
 
-                    </th>
+        return (
 
-                  )
+          <th
+            key={key}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={() => handleDrop(key)}
+            className={`
+              border border-red-300
+              px-4 py-3
+              text-center
+              whitespace-nowrap
+              font-semibold
+              tracking-wide
+              transition-all
+              duration-200
+              hover:bg-red-300
+              ${i === 0 ? "rounded-tl-xl" : ""}
+              ${i === visibleColumns.length - 1 ? "rounded-tr-xl" : ""}
+            `}
+          >
 
-                })}
+            <motion.div
+              draggable={key !== "index"}
+              onDragStart={() =>
+                key !== "index" && handleDragStart(key)
+              }
+              whileHover={
+                key !== "index"
+                  ? { scale: 1.05 }
+                  : {}
+              }
+              whileTap={
+                key !== "index"
+                  ? { scale: 0.95 }
+                  : {}
+              }
+              className={`
+                flex
+                items-center
+                justify-center
+                gap-2
+                select-none
+                ${
+                  key === "index"
+                    ? ""
+                    : "cursor-move group"
+                }
+              `}
+            >
 
-              </AnimatePresence>
+              {key !== "index" && (
+                <motion.div
+                  whileHover={{
+                    rotate: 180,
+                    scale: 1.2
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300
+                  }}
+                  className="
+                    text-red-700
+                    group-hover:text-red-900
+                  "
+                >
+                  <ArrowRightLeft size={14}/>
+                </motion.div>
+              )}
 
-            </tr>
+              <span>
+                {label}
+              </span>
 
-          </thead>
+            </motion.div>
+
+          </th>
+
+        )
+
+      })}
+
+    </AnimatePresence>
+
+  </tr>
+</thead>
 
           {/* BODY */}
 <tbody key={currentPage}>

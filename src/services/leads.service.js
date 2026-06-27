@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 //const API = `${import.meta.env.VITE_API_URL}/api`
-//const API = "https://agente.bizapp.pe/api"
+//const API = "http://192.168.9.115:3001/api"
 const API = "http://192.168.9.115:3001/api"
 // helper para evitar repetir lógica
 const getAuthConfig = () => {
@@ -38,7 +38,7 @@ const getAuthConfig = () => {
 export const getLeads = async (fecha, idCamp, iniCampania) => {
 
   const { headers, paramsExtra } = getAuthConfig()
-
+const token = localStorage.getItem('token')
   const res = await axios.get(`${API}/leads`, {
     params: {
       idCamp: Number(idCamp),
@@ -46,7 +46,10 @@ export const getLeads = async (fecha, idCamp, iniCampania) => {
       fechaIngreso: fecha,
       ...paramsExtra
     },
-    headers
+    headers: {
+        ...headers,
+        Authorization: `Bearer ${token}`
+      }
   })
 
   return res.data

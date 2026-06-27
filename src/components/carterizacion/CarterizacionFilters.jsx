@@ -8,7 +8,7 @@ import { useLocalTheme } from '../../context/useLocalTheme'
 import { getSubcampanias } from '../../services/leads.service'
 import ColumnCustomizer from '../leads/ColumnCustomizer'
 
-function LeadFilters({ onSearch, columns, setColumns }) {
+function LeadFilters({ onSearch, columns, setColumns, columnFilters, setColumnFilters, leads = [] }) {
 
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
@@ -25,6 +25,51 @@ function LeadFilters({ onSearch, columns, setColumns }) {
   const [subcampanias, setSubcampanias] = useState([])
   const [iniCampania, setIniCampania] = useState('')
   const [showColumnPanel, setShowColumnPanel] = useState(false)
+//filtros front
+const fechasDisponibles = [
+  ...new Set(
+    leads
+      .map(x => x.fecha_creaciondia?.slice(0,10))
+      .filter(Boolean)
+  )
+].sort()
+const mejoresResultados = [
+  ...new Set(
+    leads
+      .map(x => x.mejornivel2)
+      .filter(Boolean)
+  )
+].sort()
+const ultimosResultados = [
+  ...new Set(
+    leads
+      .map(x => x.ultnivel2)
+      .filter(Boolean)
+  )
+].sort()
+const calcularDiasSinLlamar = (fecha) => {
+
+  if (!fecha) return 9999
+
+  const hoy = new Date()
+  const ultima = new Date(fecha)
+
+  return Math.floor(
+    (hoy - ultima) / (1000 * 60 * 60 * 24)
+  )
+}
+const diasSinLlamarDisponibles = [
+  ...new Set(
+    leads
+      .filter(x => x.ult_fecha)
+      .map(x => calcularDiasSinLlamar(x.ult_fecha))
+  )
+].sort((a, b) => a - b)
+const gestiones = [
+  ...new Set(
+    leads.map(x => x.gestiones ?? 0)
+  )
+].sort((a, b) => a - b)
 
   // cargar campaña y subcampañas
 useEffect(() => {
@@ -67,12 +112,12 @@ getSubcampanias(parsedCamp)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-
+{/*
     if (!fecha) {
       alert('Debe seleccionar una fecha')
       return
     }
-
+ */}
     if (!idCamp) {
       alert('No hay campaña seleccionada')
       return
@@ -80,7 +125,6 @@ getSubcampanias(parsedCamp)
 
     onSearch({
       IdCamp: idCamp,
-      FechaIngreso: fecha,
       inicampania: iniCampania
     })
   }
@@ -105,31 +149,6 @@ getSubcampanias(parsedCamp)
 
         <div className="flex flex-col sm:flex-row gap-4 items-end flex-wrap">
 
-          {/* FECHA */}
-          <motion.div
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, delay: 0.05 }}
-            className="flex flex-col"
-          >
-
-            <label className="text-sm mb-1 font-medium">
-              Fecha
-            </label>
-
-            <motion.input
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-              whileFocus={{ scale: 1.02 }}
-              className={`px-3 py-2 rounded-lg border cursor-pointer transition-all duration-200 focus:ring-2 ${
-                isDark
-                  ? 'bg-slate-700 text-white border-slate-600 focus:ring-blue-500/40'
-                  : 'bg-slate-100 text-slate-800 border-slate-300 focus:ring-blue-400/40'
-              }`}
-            />
-
-          </motion.div>
 
           {/* SUBCAMPAÑA */}
           <motion.div
@@ -154,7 +173,7 @@ getSubcampanias(parsedCamp)
               }`}
             >
 
-              <option value="">Todas</option>
+              <option value="">Selecciona</option>
 
               {subcampanias.map((item) => {
   if (!item?.ini_campania) return null
@@ -172,6 +191,154 @@ getSubcampanias(parsedCamp)
             </motion.select>
 
           </motion.div>
+
+{/* Filtros del front */}
+<motion.div className="flex flex-col w-56">
+
+  <label className="text-sm mb-1 font-medium">
+    Fecha Ingreso
+  </label>
+
+  <select
+    value={columnFilters.fecha_creaciondia}
+    onChange={(e) =>
+      setColumnFilters(prev => ({
+        ...prev,
+        fecha_creaciondia: e.target.value
+      }))
+    }
+    className="px-3 py-2 rounded-lg border"
+  >
+
+    <option value="">Todos</option>
+
+    {fechasDisponibles.map(valor => (
+      <option key={valor} value={valor}>
+        {valor}
+      </option>
+    ))}
+
+  </select>
+
+</motion.div>
+
+<motion.div className="flex flex-col w-56">
+
+  <label className="text-sm mb-1 font-medium">
+    ultimo nivel
+  </label>
+
+  <select
+    value={columnFilters.ultnivel2}
+    onChange={(e) =>
+      setColumnFilters(prev => ({
+        ...prev,
+        ultnivel2: e.target.value
+      }))
+    }
+    className="px-3 py-2 rounded-lg border"
+  >
+
+    <option value="">Todos</option>
+
+    {ultimosResultados.map(valor => (
+      <option key={valor} value={valor}>
+        {valor}
+      </option>
+    ))}
+
+  </select>
+
+</motion.div>
+
+
+<motion.div className="flex flex-col w-56">
+
+  <label className="text-sm mb-1 font-medium">
+    Mejor resultado
+  </label>
+
+  <select
+    value={columnFilters.mejornivel2}
+    onChange={(e) =>
+      setColumnFilters(prev => ({
+        ...prev,
+        mejornivel2: e.target.value
+      }))
+    }
+    className="px-3 py-2 rounded-lg border"
+  >
+
+    <option value="">Todos</option>
+
+    {mejoresResultados.map(valor => (
+      <option key={valor} value={valor}>
+        {valor}
+      </option>
+    ))}
+
+  </select>
+
+</motion.div>
+<motion.div className="flex flex-col w-56">
+
+  <label className="text-sm mb-1 font-medium">
+    Días sin llamar
+  </label>
+
+  <select
+    value={columnFilters.diasSinLlamar}
+    onChange={(e) =>
+      setColumnFilters(prev => ({
+        ...prev,
+        diasSinLlamar: e.target.value
+      }))
+    }
+    className="px-3 py-2 rounded-lg border"
+  >
+    <option value="">Todos</option>
+
+    {diasSinLlamarDisponibles.map(dias => (
+      <option key={dias} value={dias}>
+        {dias === 0
+          ? 'Hoy'
+          : dias === 1
+          ? 'Hace 1 día'
+          : `Hace ${dias} días`}
+      </option>
+    ))}
+
+  </select>
+
+</motion.div>
+<motion.div className="flex flex-col w-56">
+
+  <label className="text-sm mb-1 font-medium">
+    Gestiones
+  </label>
+
+  <select
+    value={columnFilters.gestiones}
+    onChange={(e) =>
+      setColumnFilters(prev => ({
+        ...prev,
+        gestiones: e.target.value
+      }))
+    }
+    className="px-3 py-2 rounded-lg border"
+  >
+
+    <option value="">Todos</option>
+
+    {gestiones.map(valor => (
+      <option key={valor} value={valor}>
+        {valor}
+      </option>
+    ))}
+
+  </select>
+
+</motion.div>
 
           {/* BOTÓN BUSCAR */}
           <motion.button
