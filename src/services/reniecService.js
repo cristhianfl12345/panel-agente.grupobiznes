@@ -8,8 +8,8 @@ export async function buscarReniec(params) {
   const token = localStorage.getItem('token')
 
   const res = await fetch(
-    `http://192.168.9.115:3001/api/reniec/buscar?${query}`,
-    // `http://192.168.9.115:3001/api/reniec/buscar?${query}`
+    `https://agente.bizapp.pe/api/reniec/buscar?${query}`,
+    // `https://agente.bizapp.pe/api/reniec/buscar?${query}`
     // `${import.meta.env.VITE_API_URL}/api/reniec/buscar?${query}`
     {
       headers: {
@@ -30,8 +30,8 @@ export async function obtenerDetalleReniec(dni) {
   const token = localStorage.getItem('token')
 
   const res = await fetch(
-    `http://192.168.9.115:3001/api/reniec/detalle/${dni}`,
-    // `http://192.168.9.115:3001/api/reniec/detalle/${dni}`
+    `https://agente.bizapp.pe/api/reniec/detalle/${dni}`,
+    // `https://agente.bizapp.pe/api/reniec/detalle/${dni}`
     // `${import.meta.env.VITE_API_URL}/api/reniec/detalle/${dni}`
     {
       headers: {

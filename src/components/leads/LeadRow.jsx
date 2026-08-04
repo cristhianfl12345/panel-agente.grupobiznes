@@ -5,6 +5,7 @@ import { BsFillPlugFill } from 'react-icons/bs'
 import { FaPhone } from 'react-icons/fa6'
 import { useLocalTheme } from '../../context/useLocalTheme'
 import { motion } from "motion/react"
+import { TbSelectAll } from "react-icons/tb";
 
 const cellAnimation = {
   initial: { opacity: 0 },
@@ -23,10 +24,36 @@ export default function LeadRow({ lead, index, onCopy, columns = [] }) {
 
     switch (key) {
 
-    case 'index':
+case 'index':
   return (
-    <motion.td className={`${baseClass} text-center`}>
-      {index}
+    <motion.td
+      {...cellAnimation}
+      whileHover={{ scale: 1.02 }}
+      className={`${baseClass}  transition-colors p-2`}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <span>{index}</span>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+
+            onCopy?.(
+              `IdKey: ${lead.idkey || "-"} - DNI: ${lead.dni || "-"} - Telefono: ${lead.numero_telefono || "-"}`
+            );
+          }}
+          className="
+            text-indigo-600
+            hover:text-green-600
+            transition-colors
+            cursor-pointer
+          "
+          title="Copiar datos"
+        >
+          <TbSelectAll size={18} />
+        </button>
+      </div>
     </motion.td>
   )
 

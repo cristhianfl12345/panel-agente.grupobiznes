@@ -84,10 +84,11 @@ case 'index':
     onClick={() => onCopy?.(lead.idkey)}
   >
     <span 
-      className={`inline-block px-3 py-1 
+      className={`inline-block px-3 py-1 rounded-full font-medium text-sm shadow-sm transition-colors
+        bg-cyan-300/70 text-blue-900 
         ${isDark 
-          ? "group-hover:bg-black group-hover:text-white group-hover:font-bold"
-              : "group-hover:bg-black group-hover:text-white group-hover:font-bold"
+          ? 'group-hover:bg-yellow-100 group-hover:text-black' 
+          : 'group-hover:bg-yellow-100'
         }`}
     >
       {lead.idkey}
@@ -101,12 +102,7 @@ case 'index':
     className={`${baseClass} group cursor-pointer transition-colors p-2`}
     onClick={() => onCopy?.(lead.dni)}>
       {lead.dni ? (
-        <span className={`px-3 py-1 
-          ${
-            isDark
-              ? "group-hover:bg-black group-hover:text-white group-hover:font-bold"
-              : "group-hover:bg-black group-hover:text-white group-hover:font-bold"
-          }`}>
+        <span className="inline-block bg-cyan-300/70 text-blue-900 px-3 py-1 rounded-full font-medium text-sm shadow-sm">
           {lead.dni}
         </span>
       ) : (
@@ -134,11 +130,12 @@ case 'index':
       }}
     >
       <span
-        className={`px-3 py-1 
+        className={`inline-block px-3 py-1 rounded-full font-medium text-sm shadow-sm transition-colors
+          bg-purple-300 text-purple-950
           ${
             isDark
-             ? "group-hover:bg-black group-hover:text-white group-hover:font-bold"
-              : "group-hover:bg-black group-hover:text-white group-hover:font-bold"
+              ? "group-hover:bg-yellow-100 group-hover:text-black"
+              : "group-hover:bg-yellow-100"
           }`}
       >
         {lead.numero_telefono || "-"}
@@ -375,8 +372,8 @@ case 'index':
           lead.ultimocodcontacto
 
         const statusStyles = {
-          NC: "bg-red-300/90 text-red-900 border-red-200",
-          CD: "bg-emerald-300/90 text-slate-900 border-green-200",
+          NC: "bg-red-200/80 text-red-900 border-red-200",
+          CD: "bg-emerald-300/80 text-slate-900 border-green-200",
           CND: "bg-yellow-100 text-yellow-700 border-yellow-200",
         }
 
@@ -460,8 +457,8 @@ case 'mejornivel2': {
     lead.mejorcodcontacto
 
   const statusStyles = {
-    NC: "bg-red-300/90 text-red-900 border-red-200",
-    CD: "bg-emerald-300/90 text-slate-900 border-green-200",
+    NC: "bg-red-200/85 text-red-900 border-red-200",
+    CD: "bg-emerald-300/70 text-slate-900 border-green-200",
     CND: "bg-yellow-100 text-yellow-700 border-yellow-200",
   }
 

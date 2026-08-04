@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = "http://192.168.9.115:3001";
+const SOCKET_URL = "https://agente.bizapp.pe";
 
 let socket = null;
 
@@ -28,12 +28,12 @@ export default function NotificacionSocket({
 
     // conexión
     socket.on("connect", () => {
-      console.log(" Socket notificaciones conectado");
+      console.log(" Notificaciones activas");
     });
 
     // evento principal del backend
     socket.on("notificacion_leads", (data) => {
-      console.log(" Notificación recibida:", data);
+   //   console.log(" Notificación recibida:", data);
 
       if (onNotificacion) {
         onNotificacion(data);

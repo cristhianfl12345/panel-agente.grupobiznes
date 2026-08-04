@@ -66,7 +66,7 @@ export function KeepAliveProvider({ children }) {
       try {
         const token = localStorage.getItem('token')
         const res = await fetch(
-          'http://192.168.9.115:3001/api/auth/keepalive',
+          'https://agente.bizapp.pe/api/auth/keepalive',
           {
             method: 'POST',
             headers: {

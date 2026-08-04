@@ -1,22 +1,24 @@
 "use client"
 
-import { useState, useMemo } from 'react'
-import LeadRow from './CarterizacionRow'
-import { useLocalTheme } from '../../context/useLocalTheme'
+import axios from "axios"
+import { useState, useMemo } from "react"
+import LeadRow from "./CarterizacionRow"
+import { useLocalTheme } from "../../context/useLocalTheme"
 import { motion, AnimatePresence } from "motion/react"
 import { ArrowRightLeft } from "lucide-react"
+import Frames from "./Frames"
 
-export default function LeadTable({ 
-  leads = [], 
-  loading, 
-  searched, 
+export default function LeadTable({
+  leads = [],
+  loading,
+  searched,
   onCopy,
   columns,
   setColumns
 }) {
 
   const { theme } = useLocalTheme()
-  const isDark = theme === 'dark'
+  const isDark = theme === "dark"
 
   const [draggedKey, setDraggedKey] = useState(null)
 
@@ -29,28 +31,57 @@ export default function LeadTable({
     setDraggedKey(key)
   }
 
-const handleDrop = (targetKey) => {
-  if (!draggedKey) return
+const buscarLead = async (numeroTelefono) => {
+  try {
 
-  // No permitir mover index
-  if (draggedKey === "index") return
+    const { data } = await axios.post(
+      "https://agente.bizapp.pe/api/apuntes/etiquetas/buscar-lead",
+      {
+        numero_telefono: numeroTelefono
+      }
+    )
 
-  // No permitir que nada se coloque antes de index
-  if (targetKey === "index") return
+    if (data.ok) {
+      setTelefonoSeleccionado(numeroTelefono)
+      setIdLeadSeleccionado(data.idlead)
+    }
 
-  const newColumns = [...columns]
+  } catch (err) {
 
-  const fromIndex = newColumns.findIndex(c => (c.key || c.query_vista) === draggedKey)
-  const toIndex = newColumns.findIndex(c => (c.key || c.query_vista) === targetKey)
+    console.error(err)
 
-  if (fromIndex === -1 || toIndex === -1) return
-
-  const [moved] = newColumns.splice(fromIndex, 1)
-  newColumns.splice(toIndex, 0, moved)
-
-  setColumns(newColumns)
-  setDraggedKey(null)
+  }
 }
+  const handleDrop = (targetKey) => {
+
+    if (!draggedKey) return
+
+    // No permitir mover index
+    if (draggedKey === "index") return
+
+    // No permitir que nada se coloque antes de index
+    if (targetKey === "index") return
+
+    const newColumns = [...columns]
+
+    const fromIndex = newColumns.findIndex(
+      c => (c.key || c.query_vista) === draggedKey
+    )
+
+    const toIndex = newColumns.findIndex(
+      c => (c.key || c.query_vista) === targetKey
+    )
+
+    if (fromIndex === -1 || toIndex === -1) return
+
+    const [moved] = newColumns.splice(fromIndex, 1)
+    newColumns.splice(toIndex, 0, moved)
+
+    setColumns(newColumns)
+    setDraggedKey(null)
+
+  }
+
   // PAGINACIÓN
   const rowsPerPage = 20
   const [currentPage, setCurrentPage] = useState(1)
@@ -67,12 +98,15 @@ const handleDrop = (targetKey) => {
       setCurrentPage(page)
     }
   }
-
+  //traer el idlead de cada nro
+  const [telefonoSeleccionado, setTelefonoSeleccionado] = useState("")
+const [idLeadSeleccionado, setIdLeadSeleccionado] = useState(null)
   return (
 
-    <div className="w-full h-[calc(100vh-220px)] flex flex-col">
+    <div className="w-full h-[calc(100vh-220px)] flex gap-4">
 
       {/* CONTENEDOR TABLA */}
+      <div className="w-[80%] flex flex-col">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -87,7 +121,7 @@ const handleDrop = (targetKey) => {
       >
 
         <table className={`
-          w-[70%]
+          w-[100%]
           table-auto
           text-xs
           border-collapse
@@ -147,7 +181,7 @@ const handleDrop = (targetKey) => {
     transition={{ type: "spring", stiffness: 300 }}
     className="text-slate-600 group-hover:text-blue-500"
   >
-    <ArrowRightLeft size={14}/>
+ {/*    <ArrowRightLeft size={14}/> */}
   </motion.div>
 )}
 
@@ -170,18 +204,19 @@ const handleDrop = (targetKey) => {
           </thead>
 
           {/* BODY */}
-<tbody key={currentPage}>
-  {!loading && paginatedLeads.map((lead, index) => (
-    <LeadRow
-      key={`${lead.idkey}-${currentPage}`} // solucion de renderizado sobrescrito
-      lead={lead}
-      index={leads.length - ((currentPage - 1) * rowsPerPage + index)}
-      onCopy={onCopy}
-      columns={visibleColumns}
-      isDark={isDark}
-    />
-  ))}
-</tbody>
+        <tbody key={JSON.stringify(leads.map(x => x.idkey))}>
+          {!loading && paginatedLeads.map((lead, index) => (
+            <LeadRow
+              key={`${lead.idkey}-${currentPage}`} // solucion de renderizado sobrescrito
+              lead={lead}
+              index={leads.length - ((currentPage - 1) * rowsPerPage + index)}
+              onCopy={onCopy}
+              columns={visibleColumns}
+              isDark={isDark}
+               onTelefonoClick={buscarLead}
+            />
+          ))}
+        </tbody>
 
         </table>
 
@@ -258,5 +293,13 @@ const handleDrop = (targetKey) => {
       )}
 
     </div>
+    <div className="w-[20%] h-full">
+ <Frames
+    telefono={telefonoSeleccionado}
+    idlead={idLeadSeleccionado}
+/>
+</div>
+    </div>
+    
   )
 }

@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLocalTheme } from '../context/useLocalTheme'
 import { canAccess } from '../config/platformAccess'
 import Orb from '../components/Orb'
+import Metricas from './Metricas'
 
 function Home() {
   const { secondsLeft } = useKeepAlive()
@@ -44,7 +45,7 @@ if (idUsuario) {
 
   // Monitor
   fetch(
-    `http://192.168.9.115:3001/api/auth/campanas-monitor/${idUsuario}`,
+    `https://agente.bizapp.pe/api/auth/campanas-monitor/${idUsuario}`,
     {
       headers: {
         Authorization: `Bearer ${token}`
@@ -61,7 +62,7 @@ if (idUsuario) {
 
   // Carterización
   fetch(
-    `http://192.168.9.115:3001/api/auth/campanas-carterizacion/${idUsuario}`,
+    `https://agente.bizapp.pe/api/auth/campanas-carterizacion/${idUsuario}`,
     {
       headers: {
         Authorization: `Bearer ${token}`
@@ -118,6 +119,7 @@ useEffect(() => {
     localStorage.removeItem('id_usuario')
     localStorage.removeItem('hora_out')
     localStorage.removeItem('hora_in')
+    localStorage.removeItem('token')
     navigate('/login')
   }
 
@@ -153,6 +155,7 @@ const handleSelectCartera = (campana) => {
   ${isDark ? 'bg-[#1F2029] text-white' : 'bg-[#F5F5F5] text-slate-800'}
 `}
     >
+      <Metricas />
      {isDark && (
   <div className="absolute inset-0 z-0 flex items-center justify-center">
     <div className="w-[70vw] h-[70vh]">

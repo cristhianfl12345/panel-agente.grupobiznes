@@ -1,14 +1,22 @@
 "use client"
 
-import { useState, useEffect } from 'react'
-import { FiSearch } from 'react-icons/fi'
+import { useState, useEffect, useMemo } from 'react'
+import { FiSearch, FiFilter } from 'react-icons/fi'
 import { motion, AnimatePresence } from "motion/react"
 import { LayoutGrid } from "lucide-react"
 import { useLocalTheme } from '../../context/useLocalTheme'
 import { getSubcampanias } from '../../services/leads.service'
 import ColumnCustomizer from '../leads/ColumnCustomizer'
 
-function LeadFilters({ onSearch, columns, setColumns }) {
+function LeadFilters({ 
+  onSearch,
+  columns,
+  setColumns,
+  leads = [],
+  filters,
+  onFilterChange,
+  onApplyFilters,
+  onClearFilters }) {
 
   const { theme } = useLocalTheme()
   const isDark = theme === 'dark'
@@ -25,6 +33,8 @@ function LeadFilters({ onSearch, columns, setColumns }) {
   const [subcampanias, setSubcampanias] = useState([])
   const [iniCampania, setIniCampania] = useState('')
   const [showColumnPanel, setShowColumnPanel] = useState(false)
+   const [showFilters, setShowFilters] =
+    useState(false)
 
   // cargar campaña y subcampañas
 useEffect(() => {
@@ -84,6 +94,55 @@ getSubcampanias(parsedCamp)
       inicampania: iniCampania
     })
   }
+// filtros , undefined y nulls:
+  const uniqueValues = useMemo(() => {
+
+const extract = (key) => {
+
+  const set = new Set()
+
+  leads.forEach(l => {
+
+    const val = l[key]
+
+    if (
+      key === 'discador' ||
+      key === 'gestiones'
+    ) {
+
+      set.add(
+        val == null || val === ''
+          ? 0
+          : Number(val)
+      )
+
+    } else {
+
+      if (
+        val !== null &&
+        val !== undefined &&
+        val !== ''
+      ) {
+        set.add(val)
+      }
+
+    }
+
+  })
+
+  return Array.from(set).sort()
+
+}
+
+    return {
+      pautanameanuncio: extract('pautanameanuncio'),
+      CampaOrigen: extract('CampaOrigen'),
+      Alias: extract('Alias'),
+      discador: extract('discador'),
+      gestiones: extract('gestiones')
+    }
+
+  }, [leads])
 
   return (
 
@@ -199,8 +258,300 @@ getSubcampanias(parsedCamp)
             Buscar
 
           </motion.button>
+          {/* BOTÓN BUSCAR */}
+          <motion.button
+            type="button"
+              onClick={() =>
+                setShowFilters(!showFilters)
+              }
+              className="flex items-center gap-2 px-4 py-2 rounded-lg border"
+          >
+
+            <motion.span
+              whileHover={{ rotate: 12 }}
+              transition={{ type: "spring", stiffness: 300 }}
+              className="flex items-center"
+            >
+              <FiFilter />
+            </motion.span>
+
+            Filtros
+
+          </motion.button>
 
         </div>
+        
+        {/* FILTROS */}
+        <AnimatePresence>
+
+          {showFilters && (
+
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              className={`flex flex-wrap items-end gap-4 mt-2 p-3 rounded-lg ${
+                isDark
+                  ? 'bg-blue-800/30'
+                  : 'bg-slate-200'
+              } p-3 rounded-lg`}
+            >
+
+              {/* PAUTA */}
+              <div className="flex flex-col w-48">
+
+                <label
+                  className={`text-xs mb-1 ${
+                    isDark
+                      ? 'text-slate-300'
+                      : 'text-slate-600'
+                  }`}
+                >
+                  Pauta
+                </label>
+
+                <select
+                  value={filters.pautanameanuncio}
+                  onChange={(e) =>
+                    onFilterChange({
+                    ...filters,
+                    pautanameanuncio: e.target.value
+                  })
+                  }
+                  className={`px-3 py-2 rounded border ${
+                    isDark
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-white text-slate-800 border-slate-300'
+                  }`}
+                >
+
+                  <option value="">
+                    Todas
+                  </option>
+
+                  {uniqueValues.pautanameanuncio.map(v => (
+
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+
+                  ))}
+
+                </select>
+
+              </div>
+
+              {/* CAMPA ORIGEN */}
+              <div className="flex flex-col w-48">
+
+                <label
+                  className={`text-xs mb-1 ${
+                    isDark
+                      ? 'text-slate-300'
+                      : 'text-slate-600'
+                  }`}
+                >
+                  Campaña Origen
+                </label>
+
+                <select
+                  value={filters.CampaOrigen}
+                  onChange={(e) =>
+                    onFilterChange({
+                      ...filters,
+                      CampaOrigen:
+                      e.target.value
+                   } )
+                  }
+                  className={`px-3 py-2 rounded border ${
+                    isDark
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-white text-slate-800 border-slate-300'
+                  }`}
+                >
+
+                  <option value="">
+                    Todas
+                  </option>
+
+                  {uniqueValues.CampaOrigen.map(v => (
+
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+
+                  ))}
+
+                </select>
+
+              </div>
+
+              {/* ALIAS */}
+              <div className="flex flex-col w-48">
+
+                <label
+                  className={`text-xs mb-1 ${
+                    isDark
+                      ? 'text-slate-300'
+                      : 'text-slate-600'
+                  }`}
+                >
+                  Alias
+                </label>
+
+                <select
+                  value={filters.Alias}
+                  onChange={(e) =>
+                   onFilterChange({
+                    ...filters,
+                    Alias: e.target.value
+                  })
+                  }
+                  className={`px-3 py-2 rounded border ${
+                    isDark
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-white text-slate-800 border-slate-300'
+                  }`}
+                >
+
+                  <option value="">
+                    Todas
+                  </option>
+
+                  {uniqueValues.Alias.map(v => (
+
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+
+                  ))}
+
+                </select>
+
+              </div>
+
+               {/* Discador */}
+              <div className="flex flex-col w-48">
+
+                <label
+                  className={`text-xs mb-1 ${
+                    isDark
+                      ? 'text-slate-300'
+                      : 'text-slate-600'
+                  }`}
+                >
+                  Discador
+                </label>
+
+                <select
+                  value={filters.discador}
+                  onChange={(e) =>
+                    onFilterChange({
+                      ...filters,
+                      discador: e.target.value
+                    })
+                  }
+                  className={`px-3 py-2 rounded border ${
+                    isDark
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-white text-slate-800 border-slate-300'
+                  }`}
+                >
+
+                  <option value="">
+                    Todas
+                  </option>
+
+                  {uniqueValues.discador.map(v => (
+
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+
+                  ))}
+
+                </select>
+
+              </div>
+              {/* Gestiones */}
+              <div className="flex flex-col w-48">
+
+                <label
+                  className={`text-xs mb-1 ${
+                    isDark
+                      ? 'text-slate-300'
+                      : 'text-slate-600'
+                  }`}
+                >
+                  Gestiones
+                </label>
+
+                <select
+                  value={filters.gestiones}
+                  onChange={(e) =>
+                    onFilterChange({
+                      ...filters,
+                      gestiones: e.target.value
+                    })
+                  }
+                  className={`px-3 py-2 rounded border ${
+                    isDark
+                      ? 'bg-slate-700 text-white border-slate-600'
+                      : 'bg-white text-slate-800 border-slate-300'
+                  }`}
+                >
+
+                  <option value="">
+                    Todas
+                  </option>
+
+                  {uniqueValues.gestiones.map(v => (
+
+                    <option key={v} value={v}>
+                      {v}
+                    </option>
+
+                  ))}
+
+                </select>
+
+              </div>
+                <div className="md:flex gap-2 ml-auto flex justify-end gap-2 mt-3">
+
+                  <button
+                    type="button"
+                    onClick={onClearFilters}
+                    className={`
+                      px-4 py-2 rounded-lg text-sm font-medium
+                      ${
+                        isDark
+                          ? 'bg-slate-700 text-white hover:bg-slate-600'
+                          : 'bg-slate-400/80 text-slate-700 hover:bg-slate-300'
+                      }
+                    `}
+                  >
+                    Limpiar Filtros
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={onApplyFilters}
+                    className="
+                      px-4 py-2 rounded-lg text-sm font-medium
+                      bg-emerald-600 text-white
+                      hover:bg-blue-700
+                    "
+                  >
+                    Filtrar
+                  </button>
+
+                </div>
+            </motion.div>
+
+          )}
+
+        </AnimatePresence>
+
 
         {/* PANEL DE COLUMNAS */}
         <motion.div

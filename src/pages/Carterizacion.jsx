@@ -38,7 +38,13 @@ const isEmbed = !!embedKey
   diasSinLlamar: '',
   gestiones: ''
 })
-
+const [pendingFilters, setPendingFilters] = useState({
+  fecha_creaciondia: '',
+  mejornivel2: '',
+  ultnivel2: '',
+  diasSinLlamar: '',
+  gestiones: ''
+})
 
 if (!user && !isEmbed) {
   return (
@@ -77,6 +83,8 @@ const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
     return
   }
  */}
+ setLeads([])
+ setColumns([])
   setLoading(true)
   setSearched(true)
 
@@ -106,6 +114,7 @@ const fetchLeads = async ({ IdCamp, FechaIngreso, inicampania }) => {
         { key: 'index', label: 'N', visible: true },
         ...matchedColumns
       ])
+      
 
     }
 
@@ -241,6 +250,23 @@ if (columnFilters.gestiones !== '') {
     columnFilters={columnFilters}
     setColumnFilters={setColumnFilters}
     leads={leads}
+    //added para limpiar
+    filters={pendingFilters}
+  onFilterChange={setPendingFilters}
+  onApplyFilters={() => setColumnFilters(pendingFilters)}
+  
+  onClearFilters={() => {
+    const empty = {
+  fecha_creaciondia: '',
+  mejornivel2: '',
+  ultnivel2: '',
+  diasSinLlamar: '',
+  gestiones: ''
+    }
+
+    setPendingFilters(empty)
+    setColumnFilters(empty)
+  }}
   />
 )}
 

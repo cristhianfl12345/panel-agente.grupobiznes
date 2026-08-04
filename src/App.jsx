@@ -1,11 +1,10 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { AnimatePresence, motion } from "framer-motion"
 import { useRef } from "react";
 import Login from './routes/Login'
-import AddUser from './routes/AddUser'
 import Home from './routes/Home'
-
+import Metricas from './routes/Metricas'
 import ProtectedRoute from '../components/ProtectedRoute'
 import PublicRoute from '../components/PublicRoute'
 import PlatformRoute from './components/PlatformRoute'
@@ -47,11 +46,27 @@ const pageVariants = {
   }
 }
 
+const isTokenExpired = (token) => {
+  try {
+
+    const payload = JSON.parse(
+      atob(token.split(".")[1])
+    )
+
+    return Date.now() >= payload.exp * 1000
+
+  } catch {
+
+    return true
+
+  }
+}
 
 
 function AppRoutes() {
 
   const location = useLocation()
+  const navigate = useNavigate()
   const [loadingRoute, setLoadingRoute] = useState(false)
  const [noti, setNoti] = useState(null)
   const isAuth = localStorage.getItem('auth')
@@ -67,15 +82,118 @@ function AppRoutes() {
     return () => clearTimeout(timer)
 
   }, [location.pathname])
+//validar token
+  useEffect(() => {
 
+  const token = localStorage.getItem("token")
 
+  if (!token) {
 
+    logout()
+
+    return
+
+  }
+
+  if (isTokenExpired(token)) {
+
+    logout(
+      "Tu sesión ha expirado. Debes volver a iniciar sesión."
+    )
+
+  }
+
+}, [])
+useEffect(() => {
+
+  const checkToken = () => {
+
+    const token = localStorage.getItem("token")
+
+    if (!token) {
+
+      logout()
+
+      return
+
+    }
+
+    if (isTokenExpired(token)) {
+
+      logout(
+        "Tu sesión ha expirado. Debes volver a iniciar sesión."
+      )
+
+    }
+
+  }
+
+  window.addEventListener(
+    "focus",
+    checkToken
+  )
+
+  return () => {
+
+    window.removeEventListener(
+      "focus",
+      checkToken
+    )
+
+  }
+
+}, [])
+useEffect(() => {
+
+  const handleStorage = (event) => {
+
+    if (
+      event.key === "token" &&
+      !event.newValue
+    ) {
+
+      logout()
+
+    }
+
+  }
+
+  window.addEventListener(
+    "storage",
+    handleStorage
+  )
+
+  return () => {
+
+    window.removeEventListener(
+      "storage",
+      handleStorage
+    )
+
+  }
+
+}, [])
+const logout = (message = null) => {
+
+  localStorage.removeItem("token")
+  localStorage.removeItem("user")
+  localStorage.removeItem("auth")
+
+  if (message) {
+    alert(message)
+  }
+
+  navigate("/login", {
+    replace: true
+  })
+
+}
 const audioRef = useRef(new Audio("/notificacion_sound.mp3"));
 
 const handleNotificacion = (data) => {
-  console.log("🔔 Notificación global:", data);
+ // console.log("Notificación global:", data);
 
-  // 🔊 Reproducir sonido
+  // Reproducir sonido
   audioRef.current.currentTime = 0;
   audioRef.current.play().catch((err) => {
     console.error("No se pudo reproducir el audio:", err);
@@ -93,7 +211,19 @@ return (
     <NotificacionSocket
       onNotificacion={handleNotificacion}
     />
-
+{isAuth && (
+  <div
+    className="
+      fixed
+      left-0
+      top-1/2
+      -translate-y-1/2
+      z-40
+    "
+  >
+    <Metricas />
+  </div>
+)}
     {/* 🔔 POPUP NOTIFICACIÓN ANIMADA */}
     <AnimatePresence>
       {noti && (

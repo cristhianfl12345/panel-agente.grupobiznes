@@ -1,8 +1,8 @@
 import axios from 'axios'
 
 //const API = `${import.meta.env.VITE_API_URL}/api`
-//const API = "http://192.168.9.115:3001/api"
-const API = "http://192.168.9.115:3001/api"
+//const API = "https://agente.bizapp.pe/api"
+const API = "https://agente.bizapp.pe/api"
 // helper para evitar repetir lógica
 const getAuthConfig = () => {
 

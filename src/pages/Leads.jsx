@@ -30,6 +30,25 @@ const isEmbed = !!embedKey
 
   const [searchText, setSearchText] = useState('')
   const [toast, setToast] = useState(null)
+  
+  // filtros por columnas
+  const compare = (a, b) =>
+  String(a ?? '').trim() === String(b ?? '').trim()
+
+  const [columnFilters, setColumnFilters] = useState({
+    pautanameanuncio: '',
+    CampaOrigen: '',
+    Alias: '',
+    discador: '',
+    gestiones: ''
+  })
+const [pendingFilters, setPendingFilters] = useState({
+  pautanameanuncio: '',
+  CampaOrigen: '',
+  Alias: '',
+  discador: '',
+  gestiones: ''
+})
 
 
 if (!user && !isEmbed) {
@@ -132,22 +151,57 @@ useEffect(() => {
 
 }, [campFromURL])
 
-  const filteredLeads = useMemo(() => {
+
+  // FILTRO GLOBAL (searchText)
+  const searchedLeads = useMemo(() => {
 
     if (!searchText) return leads
 
     const text = searchText.toLowerCase()
 
-    return leads.filter((lead) => (
-
+    return leads.filter((lead) =>
       Object.values(lead)
         .join(" ")
         .toLowerCase()
         .includes(text)
-
-    ))
+    )
 
   }, [leads, searchText])
+
+  // FILTROS POR COLUMNAS (tipo BI)
+const filteredLeads = useMemo(() => {
+
+  return searchedLeads.filter(l => {
+
+  const discador =
+    Number(l.discador) || 0
+
+  const gestiones =
+    Number(l.gestiones) || 0
+
+  return (
+    (!columnFilters.pautanameanuncio ||
+      compare(l.pautanameanuncio, columnFilters.pautanameanuncio)) &&
+
+    (!columnFilters.CampaOrigen ||
+      compare(l.CampaOrigen, columnFilters.CampaOrigen)) &&
+
+    (!columnFilters.Alias ||
+      compare(l.Alias, columnFilters.Alias)) &&
+
+    (
+      !columnFilters.discador ||
+      discador === Number(columnFilters.discador)
+    ) &&
+
+    (
+      !columnFilters.gestiones ||
+      gestiones === Number(columnFilters.gestiones)
+    )
+  )
+
+})
+}, [searchedLeads, columnFilters])
 
 
   return (
@@ -181,11 +235,27 @@ useEffect(() => {
       <div className="px-6 py-4 space-y-4 w-full">
 
        {!isEmbed && (
-  <LeadFilters
-    onSearch={fetchLeads}
-    columns={columns}
-    setColumns={setColumns}
-  />
+        <LeadFilters
+          onSearch={fetchLeads}
+          columns={columns}
+          setColumns={setColumns}
+          leads={leads} // necesario para generar valores únicos
+            filters={pendingFilters}
+  onFilterChange={setPendingFilters}
+  onApplyFilters={() => setColumnFilters(pendingFilters)}
+  onClearFilters={() => {
+    const empty = {
+      pautanameanuncio: '',
+      CampaOrigen: '',
+      Alias: '',
+      discador: '',
+      gestiones: ''
+    }
+
+    setPendingFilters(empty)
+    setColumnFilters(empty)
+  }}
+/>
 )}
 
 

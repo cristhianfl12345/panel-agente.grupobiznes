@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 
+
 export default function Header() {
 
   const { user } = useAuth()
@@ -192,5 +193,6 @@ const campana = JSON.parse(
 
       </div>
     </motion.header>
+    
   )
 }

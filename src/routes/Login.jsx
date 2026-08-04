@@ -33,8 +33,8 @@ function Login() {
     setLoading(true)
 
     try {
-        const res = await fetch('http://192.168.9.115:3001/api/auth/login', 
-   //   const res = await fetch('http://192.168.9.115:3001/api/auth/login', 
+        const res = await fetch('https://agente.bizapp.pe/api/auth/login', 
+   //   const res = await fetch('https://agente.bizapp.pe/api/auth/login', 
     //  const res = await fetch( `${import.meta.env.VITE_API_URL}/api/auth/login`,
 
         {
